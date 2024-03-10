@@ -1,8 +1,8 @@
 EHandlers = {}
 
 function EHandlers.OnTimerFinished(timer)
-  if timer == "FixStragglersTimer" then
-    FSDebug(2, "Timer finished: " .. timer)
+  if timer == "FixStragglersJumpTimer" then
+    JumpHandlerInstance:HandleJumpTimerFinished()
   end
 end
 
