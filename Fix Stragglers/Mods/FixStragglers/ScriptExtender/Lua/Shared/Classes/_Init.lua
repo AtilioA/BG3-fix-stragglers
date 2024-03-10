@@ -1,3 +1,2 @@
 RequireFiles("Shared/Classes/", {
-  "JumpHandler"
 })
