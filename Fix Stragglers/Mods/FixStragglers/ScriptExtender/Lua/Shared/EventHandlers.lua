@@ -6,9 +6,9 @@ function EHandlers.OnTimerFinished(timer)
   end
 end
 
-function EHandlers.OnCastedSpell()
-  if spell == "Projectile_Jump" then
-    JumpHandlerInstance:HandleJump()
+function EHandlers.OnCastedSpell(params)
+  if params.Spell == "Projectile_Jump" then
+    JumpHandlerInstance:HandleJump(params)
   end
 end
 
