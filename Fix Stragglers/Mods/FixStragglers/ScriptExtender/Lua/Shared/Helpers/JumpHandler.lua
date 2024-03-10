@@ -77,7 +77,7 @@ function JumpHandler:HandleJumpTimerFinished()
       self.HandlingJump = false
       if self.ShouldTeleportCompanions then
         FSDebug(1, "JumpHandler:CheckDistance: Distance threshold crossed, teleporting party members...")
-        Helpers.Teleporting:TeleportPartyMembersToCharacter(self.Jumper)
+        Helpers.Teleporting:TeleportLinkedMembersToCharacter(self.Jumper)
       end
       return
     end

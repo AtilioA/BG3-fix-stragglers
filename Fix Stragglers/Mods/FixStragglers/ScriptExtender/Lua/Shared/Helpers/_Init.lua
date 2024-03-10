@@ -3,5 +3,4 @@ RequireFiles("Shared/Helpers/", {
   "Printer",
   "Utils",
   "JumpHandler",
-  "Teleporting"
 })
