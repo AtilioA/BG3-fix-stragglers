@@ -1,4 +1,4 @@
-Config = Helpers.Config:New({
+Config = VCHelpers.Config:New({
   folderName = "FixStragglers",
   configFilePath = "fix_stragglers_config.json",
   defaultConfig = {
@@ -10,18 +10,18 @@ Config = Helpers.Config:New({
 
       teleporting_method = {
         enabled = true,
-        jump_check_interval = 5, -- Interval in seconds for checking distance after jumping
-        distance_threshold = 25, -- Distance threshold for teleporting party members (TODO: remove the distance traveled by the jump: UsingSpellAtPosition - CastSpell)
-        stop_threshold_time = 30, -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
+        jump_check_interval = 5,         -- Interval in seconds for checking distance after jumping
+        distance_threshold = 25,         -- Distance threshold for teleporting party members (TODO: remove the distance traveled by the jump: UsingSpellAtPosition - CastSpell)
+        stop_threshold_time = 30,        -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
         enable_fall_damage_check = true, -- Option to enable fall damage from teleported characters
       },
       jump_boosting_method = {
-        enabled = true, -- Option to enable aggressive method (boosts the jump distance right away)
+        enabled = true,               -- Option to enable aggressive method (boosts the jump distance right away)
         use_aggressive_method = true, -- Option to enable aggressive method (boosts the jump distance right away)
       }
     },
     DEBUG = {
-      level = 0 -- 0 = no debug, 1 = minimal, 2 = verbose logs
+      level = 0 -- 0 = no debug, 1 = minimal, 2 = verbose debug logs
     }
   },
   onConfigReloaded = {}

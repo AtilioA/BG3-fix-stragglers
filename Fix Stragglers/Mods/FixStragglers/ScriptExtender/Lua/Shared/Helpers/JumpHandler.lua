@@ -30,16 +30,16 @@ function JumpHandler:CheckDistance()
 
   local companions = Osi.DB_Players:Get(nil)
   for i, companion in ipairs(companions) do
-    local companionGuid = Helpers.Format:Guid(companion[1])
+    local companionGuid = VCHelpers.Format:Guid(companion[1])
     if companionGuid ~= self.Jumper then
       -- Retrieve companion's position
       local companionPosition = { Osi.GetPosition(companionGuid) }
       -- Calculate distance considering height
-      local distance = Helpers.Grid:GetDistance(hostPosition, companionPosition, true)
+      local distance = VCHelpers.Grid:GetDistance(hostPosition, companionPosition, true)
 
       FSDebug(1,
         "JumpHandler:CheckDistance: Distance to " ..
-        Helpers.Loca:GetDisplayName(companionGuid) .. " is " .. string.format("%.2fm", distance))
+        VCHelpers.Loca:GetDisplayName(companionGuid) .. " is " .. string.format("%.2fm", distance))
 
       if distance > self.DistanceThreshold then
         return true
@@ -77,7 +77,7 @@ function JumpHandler:HandleJumpTimerFinished()
       self.HandlingJump = false
       if self.ShouldTeleportCompanions then
         FSDebug(1, "JumpHandler:CheckDistance: Distance threshold crossed, teleporting party members...")
-        Helpers.Teleporting:TeleportLinkedPartyMembersToCharacter(self.Jumper)
+        VCHelpers.Teleporting:TeleportLinkedPartyMembersToCharacter(self.Jumper)
       end
       return
     end
@@ -105,7 +105,7 @@ end
 function JumpHandler:HandleJump(params)
   local Caster, CasterGuid, Spell, SpellType, SpellElement, StoryActionID = params.Caster, params.CasterGuid,
       params.Spell, params.SpellType, params.SpellElement, params.StoryActionID
-  FSDebug(2, "JumpHandler:HandleJump called for character: " .. Helpers.Loca:GetDisplayName(CasterGuid))
+  FSDebug(2, "JumpHandler:HandleJump called for character: " .. VCHelpers.Loca:GetDisplayName(CasterGuid))
   if not self.HandlingJump and Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) == 1 then
     self.Jumper = CasterGuid
     FSDebug(1, "JumpHandler:HandleJump: Character is in party with host, handling...")
