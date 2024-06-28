@@ -16,19 +16,6 @@
             ],
             "Sections": [
                 {
-                    "SectionId": "str_check",
-                    "SectionName": "Strength Check",
-                    "Settings": [
-                        {
-                            "Id": "enable_str_check",
-                            "Name": "Use Strength check",
-                            "Type": "checkbox",
-                            "Default": false,
-                            "Description": "If enabled, only the party members with STR equal or higher than the jumper will be handled."
-                        }
-                    ]
-                },
-                {
                     "SectionId": "teleporting_method",
                     "SectionName": "Teleporting Method",
                     "Settings": [
@@ -36,15 +23,15 @@
                             "Id": "teleporting_method_enabled",
                             "Name": "Enable teleporting method",
                             "Type": "checkbox",
-                            "Description": "Option to enable teleporting method.\n(teleports party members after some time and distance after jumping)",
+                            "Description": "Whether to teleport party members after some time and distance after jumping.",
                             "Default": true
                         },
                         {
                             "Id": "distance_threshold",
-                            "Name": "Distance threshold",
+                            "Name": "Distance threshold (m)",
                             "Type": "slider_int",
                             "Default": 25,
-                            "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n1m ≈ 3.28",
+                            "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n3m = ~10ft",
                             "Options": {
                                 "Min": 1,
                                 "Max": 50
@@ -52,10 +39,10 @@
                         },
                         {
                             "Id": "jump_check_interval",
-                            "Name": "Jump Check Interval",
+                            "Name": "Jump check interval (s)",
                             "Type": "slider_int",
                             "Default": 5,
-                            "Description": "Interval in seconds between distance checks after jumping.\nWill periodically check if party members have crossed the distance threshold\nCheck is repeated every X seconds until the time threshold (set below) is reached.",
+                            "Description": "Interval in seconds between distance checks after jumping.\nWill periodically check if party members have crossed the distance threshold.\nThis check is repeated every X seconds until the time threshold (set below) is reached.",
                             "Options": {
                                 "Min": 1,
                                 "Max": 10
@@ -63,12 +50,12 @@
                         },
                         {
                             "Id": "stop_threshold_time",
-                            "Name": "Stop threshold Time",
+                            "Name": "Stop threshold time (s)",
                             "Type": "slider_int",
                             "Default": 30,
-                            "Description": "Time threshold to stop checking for distance after jumping.\nAfter this number of seconds, the mod will stop checking if the party members crossed the distance threshold.",
+                            "Description": "Time threshold to stop checking for distance after jumping.\nAfter this number of seconds, the mod will stop checking if party members crossed the distance threshold.",
                             "Options": {
-                                "Min": 1,
+                                "Min": 5,
                                 "Max": 120
                             }
                         }
@@ -76,21 +63,21 @@
                 },
                 {
                     "SectionId": "jump_boosting_method",
-                    "SectionName": "Jump Boosting Method",
+                    "SectionName": "Jump boosting method",
                     "Settings": [
                         {
                             "Id": "jump_boosting_method_enabled",
-                            "Name": "Enable Jump Boosting Method",
+                            "Name": "Enable jump boosting method",
                             "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Option to enable jump boosting method\n(boosts the jump distance for other characters so that they may try to keep up)"
+                            "Default": false,
+                            "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
                         },
                         {
                             "Id": "use_aggressive_method",
-                            "Name": "Use Aggressive Method",
+                            "Name": "Use aggressive jump boosting method",
                             "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Option to enable aggressive method (boosts the jump distance right away)",
+                            "Default": false,
+                            "Description": "Whether to buff jump distance for companions right when your character jumps",
                             "VisibleIf": {
                                 "Conditions": [
                                     {
@@ -100,6 +87,19 @@
                                     }
                                 ]
                             }
+                        }
+                    ]
+                },
+                {
+                    "SectionId": "str_check",
+                    "SectionName": "Strength check",
+                    "Settings": [
+                        {
+                            "Id": "enable_str_check",
+                            "Name": "Use Strength check",
+                            "Type": "checkbox",
+                            "Default": false,
+                            "Description": "If enabled, only party members with STR equal or higher than the jumper will be handled (teleported or buffed)."
                         }
                     ]
                 }
@@ -112,8 +112,12 @@
                 {
                     "Id": "debug_level",
                     "Name": "Debug Level",
-                    "Type": "int",
+                    "Type": "slider_int",
                     "Default": 0,
+                    "Options": {
+                        "Min": 0,
+                        "Max": 2
+                    },
                     "Description": "0 = no debug, 1 = minimal, 2 = verbose debug logs"
                 }
             ]
