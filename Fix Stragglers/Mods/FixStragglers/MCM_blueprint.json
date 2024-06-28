@@ -1,0 +1,122 @@
+{
+    "SchemaVersion": 1,
+    "ModName": "Fix Stragglers",
+    "Tabs": [
+        {
+            "TabId": "features",
+            "TabName": "Features",
+            "Settings": [
+                {
+                    "Id": "enabled",
+                    "Name": "Enable Mod",
+                    "Type": "checkbox",
+                    "Default": true,
+                    "Description": "Toggle the mod on/off"
+                }
+            ],
+            "Sections": [
+                {
+                    "SectionId": "str_check",
+                    "SectionName": "Strength Check",
+                    "Settings": [
+                        {
+                            "Id": "enable_str_check",
+                            "Name": "Use Strength check",
+                            "Type": "checkbox",
+                            "Default": false,
+                            "Description": "If enabled, only the party members with STR equal or higher than the jumper will be handled."
+                        }
+                    ]
+                },
+                {
+                    "SectionId": "teleporting_method",
+                    "SectionName": "Teleporting Method",
+                    "Settings": [
+                        {
+                            "Id": "teleporting_method_enabled",
+                            "Name": "Enable teleporting method",
+                            "Type": "checkbox",
+                            "Description": "Option to enable teleporting method.\n(teleports party members after some time and distance after jumping)",
+                            "Default": true
+                        },
+                        {
+                            "Id": "distance_threshold",
+                            "Name": "Distance threshold",
+                            "Type": "slider_int",
+                            "Default": 25,
+                            "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n1m ≈ 3.28",
+                            "Options": {
+                                "Min": 1,
+                                "Max": 50
+                            }
+                        },
+                        {
+                            "Id": "jump_check_interval",
+                            "Name": "Jump Check Interval",
+                            "Type": "slider_int",
+                            "Default": 5,
+                            "Description": "Interval in seconds between distance checks after jumping.\nWill periodically check if party members have crossed the distance threshold\nCheck is repeated every X seconds until the time threshold (set below) is reached.",
+                            "Options": {
+                                "Min": 1,
+                                "Max": 10
+                            }
+                        },
+                        {
+                            "Id": "stop_threshold_time",
+                            "Name": "Stop threshold Time",
+                            "Type": "slider_int",
+                            "Default": 30,
+                            "Description": "Time threshold to stop checking for distance after jumping.\nAfter this number of seconds, the mod will stop checking if the party members crossed the distance threshold.",
+                            "Options": {
+                                "Min": 1,
+                                "Max": 120
+                            }
+                        }
+                    ]
+                },
+                {
+                    "SectionId": "jump_boosting_method",
+                    "SectionName": "Jump Boosting Method",
+                    "Settings": [
+                        {
+                            "Id": "jump_boosting_method_enabled",
+                            "Name": "Enable Jump Boosting Method",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Option to enable jump boosting method\n(boosts the jump distance for other characters so that they may try to keep up)"
+                        },
+                        {
+                            "Id": "use_aggressive_method",
+                            "Name": "Use Aggressive Method",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Option to enable aggressive method (boosts the jump distance right away)",
+                            "VisibleIf": {
+                                "Conditions": [
+                                    {
+                                        "SettingId": "jump_boosting_method_enabled",
+                                        "ExpectedValue": "true",
+                                        "Operator": "=="
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "TabId": "debug",
+            "TabName": "Debug",
+            "Settings": [
+                {
+                    "Id": "debug_level",
+                    "Name": "Debug Level",
+                    "Type": "int",
+                    "Default": 0,
+                    "Description": "0 = no debug, 1 = minimal, 2 = verbose debug logs"
+                }
+            ]
+        }
+    ]
+}
