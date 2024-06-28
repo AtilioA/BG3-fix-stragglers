@@ -10,114 +10,138 @@
 JumpHandler = _Class:Create("JumpHandler")
 
 function JumpHandler:Init()
-  self.Jumper = nil
-  self.HandlingJump = false
-  self.FirstJumpTime = nil
-  self.JumpCheckInterval = Config:getCfg().FEATURES.teleporting_method.jump_check_interval
-  self.DistanceThreshold = Config:getCfg().FEATURES.teleporting_method.distance_threshold
-  self.StopThresholdTime = Config:getCfg().FEATURES.teleporting_method.stop_threshold_time
-  self.EnableFallDamageCheck = Config:getCfg().FEATURES.teleporting_method.enable_fall_damage_check
-  self.ShouldTeleportCompanions = Config:getCfg().FEATURES.teleporting_method.enabled
-  self.ShouldBoostJump = {
-    enabled = Config:getCfg().FEATURES.jump_boosting_method.enabled,
-    aggressive = Config:getCfg()
-        .FEATURES.jump_boosting_method.use_aggressive_method
-  }
+    self.Jumper = nil
+    self.HandlingJump = false
+    self.FirstJumpTime = nil
+    self.JumpCheckInterval = Config:getCfg().FEATURES.teleporting_method.jump_check_interval
+    self.DistanceThreshold = Config:getCfg().FEATURES.teleporting_method.distance_threshold
+    self.StopThresholdTime = Config:getCfg().FEATURES.teleporting_method.stop_threshold_time
+    self.EnableFallDamageCheck = Config:getCfg().FEATURES.teleporting_method.enable_fall_damage_check
+    self.ShouldTeleportCompanions = Config:getCfg().FEATURES.teleporting_method.enabled
+    self.ShouldBoostJump = {
+        enabled = Config:getCfg().FEATURES.jump_boosting_method.enabled,
+        aggressive = Config:getCfg()
+            .FEATURES.jump_boosting_method.use_aggressive_method
+    }
 end
 
+-- function JumpHandler:HandleHitpointsChanged(entity, percentage)
+--     FSWarn(1, "JumpHandler:HandleHitpointsChanged: Entered function")
+--     local entityGuid = VCHelpers.Format:Guid(entity)
+--     if entityGuid == self.Jumper then
+--         FSWarn(1, "JumpHandler:HandleHitpointsChanged: Jumper's hitpoints changed, checking for fall damage...")
+
+--         if self.EnableFallDamageCheck then
+--             FSWarn(2, "JumpHandler:HandleHitpointsChanged: Fall damage check enabled, getting linked characters")
+--             local otherPartyMembers = VCHelpers.Character:GetCharactersLinkedWith(self.Jumper)
+--             for i, companion in ipairs(otherPartyMembers) do
+--                 -- FSWarn(3, "JumpHandler:HandleHitpointsChanged: Checking companion " .. companion[1])
+--                 if companion ~= self.Jumper then
+--                     local damageToJumper = Osi.GetHitpoints(self.Jumper) * percentage / 100
+--                     FSWarn(2,
+--                         "JumpHandler:HandleHitpointsChanged: Applying " ..
+--                         damageToJumper .. " fall damage to " .. VCHelpers.Loca:GetDisplayName(companion))
+--                     Osi.ApplyDamage(companion, damageToJumper, self.Jumper)
+--                 end
+--             end
+--         end
+--     end
+--     FSWarn(1, "JumpHandler:HandleHitpointsChanged: Exiting function")
+-- end
+
 function JumpHandler:CheckDistance()
-  local hostPosition = { Osi.GetPosition(self.Jumper) }
+    local hostPosition = { Osi.GetPosition(self.Jumper) }
 
-  local companions = Osi.DB_Players:Get(nil)
-  for i, companion in ipairs(companions) do
-    local companionGuid = VCHelpers.Format:Guid(companion[1])
-    if companionGuid ~= self.Jumper then
-      -- Retrieve companion's position
-      local companionPosition = { Osi.GetPosition(companionGuid) }
-      -- Calculate distance considering height
-      local distance = VCHelpers.Grid:GetDistance(hostPosition, companionPosition, true)
+    local companions = Osi.DB_Players:Get(nil)
+    for i, companion in ipairs(companions) do
+        local companionGuid = VCHelpers.Format:Guid(companion[1])
+        if companionGuid ~= self.Jumper then
+            -- Retrieve companion's position
+            local companionPosition = { Osi.GetPosition(companionGuid) }
+            -- Calculate distance considering height
+            local distance = VCHelpers.Grid:GetDistance(hostPosition, companionPosition, true)
 
-      FSDebug(1,
-        "JumpHandler:CheckDistance: Distance to " ..
-        VCHelpers.Loca:GetDisplayName(companionGuid) .. " is " .. string.format("%.2fm", distance))
+            FSDebug(1,
+                "JumpHandler:CheckDistance: Distance to " ..
+                VCHelpers.Loca:GetDisplayName(companionGuid) .. " is " .. string.format("%.2fm", distance))
 
-      if distance > self.DistanceThreshold then
-        return true
-      end
+            if distance > self.DistanceThreshold then
+                return true
+            end
+        end
     end
-  end
 
-  return false
+    return false
 end
 
 --- Checks if the time threshold has been reached
 function JumpHandler:CheckStopThresholdTime()
-  local timePassed = Ext.Utils.MonotonicTime() - self.FirstJumpTime
-  if timePassed > self.StopThresholdTime * 1000 then
-    FSDebug(1, "JumpHandler:CheckStopThresholdTime: Time threshold reached, stopping jump handling...")
-    return true
-  end
+    local timePassed = Ext.Utils.MonotonicTime() - self.FirstJumpTime
+    if timePassed > self.StopThresholdTime * 1000 then
+        FSDebug(1, "JumpHandler:CheckStopThresholdTime: Time threshold reached, stopping jump handling...")
+        return true
+    end
 
-  return false
+    return false
 end
 
 --- Handles the jump timer finished event
 function JumpHandler:HandleJumpTimerFinished()
-  if self.HandlingJump then
-    FSDebug(1, "JumpHandler:HandleJumpTimerFinished: Jump timer finished...")
+    if self.HandlingJump then
+        FSDebug(1, "JumpHandler:HandleJumpTimerFinished: Jump timer finished...")
 
-    -- Check if self.StopThresholdTime has passed since the first jump
-    if (self:CheckStopThresholdTime()) then
-      self.HandlingJump = false
-      return
+        -- Check if self.StopThresholdTime has passed since the first jump
+        if (self:CheckStopThresholdTime()) then
+            self.HandlingJump = false
+            return
+        end
+
+        -- Check if the distance has been crossed
+        if (self:CheckDistance()) then
+            self.HandlingJump = false
+            if self.ShouldTeleportCompanions then
+                FSDebug(1, "JumpHandler:CheckDistance: Distance threshold crossed, teleporting party members...")
+                VCHelpers.Teleporting:TeleportLinkedPartyMembersToCharacter(self.Jumper)
+            end
+            return
+        end
     end
 
-    -- Check if the distance has been crossed
-    if (self:CheckDistance()) then
-      self.HandlingJump = false
-      if self.ShouldTeleportCompanions then
-        FSDebug(1, "JumpHandler:CheckDistance: Distance threshold crossed, teleporting party members...")
-        VCHelpers.Teleporting:TeleportLinkedPartyMembersToCharacter(self.Jumper)
-      end
-      return
-    end
-  end
-
-  Osi.TimerLaunch("FixStragglersJumpTimer", self.JumpCheckInterval * 1000)
+    Osi.TimerLaunch("FixStragglersJumpTimer", self.JumpCheckInterval * 1000)
 end
 
 --- TODO: Boosts the jump of the companions
 function JumpHandler:BoostCompanionsJump()
-  FSDebug(1, "JumpHandler:BoostCompanionsJump: Boosting companions jump...")
+    FSDebug(1, "JumpHandler:BoostCompanionsJump: Boosting companions jump...")
 
-  local companions = Osi.DB_Players:Get(nil)
-  for i, companion in pairs(companions) do
-    _D(companion[1])
-    if companion[1] ~= self.Jumper then
-      local companionGuid = companion[1]
-      local companionCharacter = Ext.Entity.Get(companionGuid)
+    local companions = Osi.DB_Players:Get(nil)
+    for i, companion in pairs(companions) do
+        _D(companion)
+        if companion ~= self.Jumper then
+            local companionGuid = companion
+            local companionCharacter = Ext.Entity.Get(companionGuid)
+        end
     end
-  end
 end
 
 --- Handles the jump event
 ---@param params VCCastedSpellParams
 function JumpHandler:HandleJump(params)
-  local Caster, CasterGuid, Spell, SpellType, SpellElement, StoryActionID = params.Caster, params.CasterGuid,
-      params.Spell, params.SpellType, params.SpellElement, params.StoryActionID
-  FSDebug(2, "JumpHandler:HandleJump called for character: " .. VCHelpers.Loca:GetDisplayName(CasterGuid))
-  if not self.HandlingJump and Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) == 1 then
-    self.Jumper = CasterGuid
-    FSDebug(1, "JumpHandler:HandleJump: Character is in party with host, handling...")
-    self.HandlingJump = true
+    local Caster, CasterGuid, Spell, SpellType, SpellElement, StoryActionID = params.Caster, params.CasterGuid,
+        params.Spell, params.SpellType, params.SpellElement, params.StoryActionID
+    FSDebug(2, "JumpHandler:HandleJump called for character: " .. VCHelpers.Loca:GetDisplayName(CasterGuid))
+    if not self.HandlingJump and Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) == 1 then
+        self.Jumper = CasterGuid
+        FSDebug(1, "JumpHandler:HandleJump: Character is in party with host, handling...")
+        self.HandlingJump = true
 
-    if (self.ShouldBoostJump.enabled and self.ShouldBoostJump.aggressive) then
-      JumpHandler:BoostCompanionsJump()
+        if (self.ShouldBoostJump.enabled and self.ShouldBoostJump.aggressive) then
+            JumpHandler:BoostCompanionsJump()
+        end
+
+        self.FirstJumpTime = Ext.Utils.MonotonicTime()
+        Osi.TimerLaunch("FixStragglersJumpTimer", self.JumpCheckInterval * 1000)
     end
-
-    self.FirstJumpTime = Ext.Utils.MonotonicTime()
-    Osi.TimerLaunch("FixStragglersJumpTimer", self.JumpCheckInterval * 1000)
-  end
 end
 
 return JumpHandler
