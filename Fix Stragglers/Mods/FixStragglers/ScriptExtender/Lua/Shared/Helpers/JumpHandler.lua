@@ -49,6 +49,7 @@ end
 --     FSWarn(1, "JumpHandler:HandleHitpointsChanged: Exiting function")
 -- end
 
+-- FIXME: only check linked characters
 function JumpHandler:CheckDistance()
     local hostPosition = { Osi.GetPosition(self.Jumper) }
 
