@@ -17,7 +17,7 @@
             "Sections": [
                 {
                     "SectionId": "teleporting_method",
-                    "SectionName": "Teleporting Method",
+                    "SectionName": "Teleporting method",
                     "Settings": [
                         {
                             "Id": "teleporting_method_enabled",
@@ -60,6 +60,44 @@
                             }
                         }
                     ]
+                },
+                {
+                    "SectionName": "Teleporting method - fall damage settings",
+                    "SectionId": "fall_damage_settings",
+                    "Settings": [
+                        {
+                            "Id": "ignore_if_fall_damage",
+                            "Name": "Ignore if fall damage",
+                            "Type": "checkbox",
+                            "Default": false,
+                            "Description": "Whether to ignore teleporting party members if jumper took fall damage."
+                        },
+                        {
+                            "Id": "apply_fall_damage",
+                            "Name": "Apply fall damage",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to apply fall damage to party members after teleporting if jumper took fall damage.",
+                            "VisibleIf": {
+                                "Conditions": [
+                                    {
+                                        "SettingId": "ignore_if_fall_damage",
+                                        "ExpectedValue": "false",
+                                        "Operator": "=="
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "VisibleIf": {
+                        "Conditions": [
+                            {
+                                "SettingId": "teleporting_method_enabled",
+                                "ExpectedValue": "true",
+                                "Operator": "=="
+                            }
+                        ]
+                    }
                 },
                 {
                     "SectionId": "jump_boosting_method",
