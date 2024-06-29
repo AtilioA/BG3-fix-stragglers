@@ -7,7 +7,7 @@
             "TabName": "Features",
             "Settings": [
                 {
-                    "Id": "enabled",
+                    "Id": "mod_enabled",
                     "Name": "Enable Mod",
                     "Type": "checkbox",
                     "Default": true,

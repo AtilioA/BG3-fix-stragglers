@@ -4,7 +4,8 @@
 ---@field public JumpCheckInterval number -- Interval in seconds for checking distance after jumping
 ---@field public DistanceThreshold number -- Distance threshold for teleporting party members
 ---@field public StopThresholdTime number -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
----@field public EnableFallDamageCheck boolean -- Option to enable fall damage from teleported characters
+---@field public IgnoreIfJumperTookFallDamage boolean -- Option to enable checking fall damage from jumper
+---@field public EnableApplyFallDamage boolean -- Option to enable applying fall damage to teleported characters
 ---@field public ShouldTeleportCompanions boolean -- Option to enable teleporting party members
 ---@field public ShouldBoostJump table -- Options for boosting jump
 JumpHandler = _Class:Create("JumpHandler")
@@ -13,16 +14,63 @@ function JumpHandler:Init()
     self.Jumper = nil
     self.HandlingJump = false
     self.FirstJumpTime = nil
-    self.JumpCheckInterval = Config:getCfg().FEATURES.teleporting_method.jump_check_interval
-    self.DistanceThreshold = Config:getCfg().FEATURES.teleporting_method.distance_threshold
-    self.StopThresholdTime = Config:getCfg().FEATURES.teleporting_method.stop_threshold_time
-    self.EnableFallDamageCheck = Config:getCfg().FEATURES.teleporting_method.enable_fall_damage_check
-    self.ShouldTeleportCompanions = Config:getCfg().FEATURES.teleporting_method.enabled
+    self.JumpCheckInterval = MCMGet("jump_check_interval")
+    self.DistanceThreshold = MCMGet("distance_threshold")
+    self.StopThresholdTime = MCMGet("stop_threshold_time")
+    self.IgnoreIfJumperTookFallDamage = MCMGet("ignore_if_fall_damage")
+    self.EnableApplyFallDamage = MCMGet("apply_fall_damage")
+    self.ShouldTeleportCompanions = MCMGet("teleporting_method_enabled")
     self.ShouldBoostJump = {
-        enabled = Config:getCfg().FEATURES.jump_boosting_method.enabled,
-        aggressive = Config:getCfg()
-            .FEATURES.jump_boosting_method.use_aggressive_method
+        enabled = MCMGet("jump_boosting_method_enabled"),
+        aggressive = MCMGet("use_aggressive_method")
     }
+
+    -- Update the JumpHandler instance values when the MCM settings are changed
+    Ext.RegisterNetListener("MCM_Saved_Setting", function(call, payload)
+        local data = Ext.Json.Parse(payload)
+        if not data or data.modGUID ~= ModuleUUID or not data.settingId then
+            return
+        end
+
+        local settingUpdates = {
+            ["jump_check_interval"] = function(value)
+                FSDebug(0, "Setting jump check interval to " .. value)
+                self.JumpCheckInterval = value
+            end,
+            ["distance_threshold"] = function(value)
+                FSDebug(0, "Setting distance threshold to " .. value)
+                self.DistanceThreshold = value
+            end,
+            ["stop_threshold_time"] = function(value)
+                FSDebug(0, "Setting stop threshold time to " .. value)
+                self.StopThresholdTime = value
+            end,
+            ["ignore_if_fall_damage"] = function(value)
+                FSDebug(0, "Setting ignore if fall damage to " .. value)
+                self.IgnoreIfJumperTookFallDamage = value
+            end,
+            ["apply_fall_damage"] = function(value)
+                FSDebug(0, "Setting apply fall damage to " .. value)
+                self.EnableApplyFallDamage = value
+            end,
+            ["teleporting_method_enabled"] = function(value)
+                FSDebug(0, "Setting teleporting method enabled to " .. value)
+                self.ShouldTeleportCompanions = value
+            end,
+            ["jump_boosting_method_enabled"] = function(value)
+                FSDebug(0, "Setting jump boosting method enabled to " .. value)
+                self.ShouldBoostJump.enabled = value
+            end,
+            ["use_aggressive_method"] = function(value)
+                FSDebug(0, "Setting use aggressive jump boosting method to " .. value)
+                self.ShouldBoostJump.aggressive = value
+            end
+        }
+
+        if settingUpdates[data.settingId] then
+            settingUpdates[data.settingId](data.value)
+        end
+    end)
 end
 
 -- function JumpHandler:HandleHitpointsChanged(entity, percentage)
@@ -31,7 +79,7 @@ end
 --     if entityGuid == self.Jumper then
 --         FSWarn(1, "JumpHandler:HandleHitpointsChanged: Jumper's hitpoints changed, checking for fall damage...")
 
---         if self.EnableFallDamageCheck then
+--         if self.IgnoreIfJumperTookFallDamage then
 --             FSWarn(2, "JumpHandler:HandleHitpointsChanged: Fall damage check enabled, getting linked characters")
 --             local otherPartyMembers = VCHelpers.Character:GetCharactersLinkedWith(self.Jumper)
 --             for i, companion in ipairs(otherPartyMembers) do

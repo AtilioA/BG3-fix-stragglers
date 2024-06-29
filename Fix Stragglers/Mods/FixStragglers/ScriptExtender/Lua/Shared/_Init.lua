@@ -40,8 +40,8 @@ end
 
 RequireFiles("Shared/", {
     "MetaClass",
-    "Helpers/_Init",
     "Classes/_Init",
+    "Helpers/_Init",
     "SubscribedEvents",
     "EventHandlers",
 })
