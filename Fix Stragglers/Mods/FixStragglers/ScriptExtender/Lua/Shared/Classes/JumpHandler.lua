@@ -154,9 +154,10 @@ function JumpHandler:HandleJumpTimerFinished()
             end
             return
         end
-    end
 
-    Osi.TimerLaunch("FixStragglersJumpTimer", self.JumpCheckInterval * 1000)
+    Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
+        JumpHandlerInstance:HandleJumpTimerFinished()
+    end)
 end
 
 --- TODO: Boosts the jump of the companions
@@ -165,7 +166,6 @@ function JumpHandler:BoostCompanionsJump()
 
     local companions = Osi.DB_Players:Get(nil)
     for i, companion in pairs(companions) do
-        _D(companion)
         if companion ~= self.Jumper then
             local companionGuid = companion
             local companionCharacter = Ext.Entity.Get(companionGuid)
@@ -189,8 +189,9 @@ function JumpHandler:HandleJump(params)
         end
 
         self.FirstJumpTime = Ext.Utils.MonotonicTime()
-        Osi.TimerLaunch("FixStragglersJumpTimer", self.JumpCheckInterval * 1000)
-    end
+    Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
+        JumpHandlerInstance:HandleJumpTimerFinished()
+    end)
 end
 
 return JumpHandler
