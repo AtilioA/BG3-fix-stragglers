@@ -10,20 +10,34 @@
 ---@field public ShouldBoostJump table -- Options for boosting jump
 JumpHandler = _Class:Create("JumpHandler")
 
+local PartyMemberSelector = PartyMemberSelector:New()
+
 function JumpHandler:Init()
     self.Jumper = nil
     self.HandlingJump = false
     self.FirstJumpTime = nil
-    self.JumpCheckInterval = MCMGet("jump_check_interval")
-    self.DistanceThreshold = MCMGet("distance_threshold")
-    self.StopThresholdTime = MCMGet("stop_threshold_time")
-    self.IgnoreIfJumperTookFallDamage = MCMGet("ignore_if_fall_damage")
-    self.EnableApplyFallDamage = MCMGet("apply_fall_damage")
-    self.ShouldTeleportCompanions = MCMGet("teleporting_method_enabled")
-    self.ShouldBoostJump = {
-        enabled = MCMGet("jump_boosting_method_enabled"),
-        aggressive = MCMGet("use_aggressive_method")
+
+    -- Define the mapping of MCM settings to JumpHandler attributes
+    local settingsMap = {
+        jump_check_interval = "JumpCheckInterval",
+        distance_threshold = "DistanceThreshold",
+        stop_threshold_time = "StopThresholdTime",
+        ignore_if_fall_damage = "IgnoreIfJumperTookFallDamage",
+        apply_fall_damage = "EnableApplyFallDamage",
+        teleporting_method_enabled = "ShouldTeleportCompanions",
+        jump_boosting_method_enabled = { "ShouldBoostJump", "enabled" },
+        use_aggressive_method = { "ShouldBoostJump", "aggressive" },
     }
+
+    -- Initialize attributes from MCM settings
+    for mcmSetting, attribute in pairs(settingsMap) do
+        if type(attribute) == "table" then
+            if not self[attribute[1]] then self[attribute[1]] = {} end
+            self[attribute[1]][attribute[2]] = MCMGet(mcmSetting)
+        else
+            self[attribute] = MCMGet(mcmSetting)
+        end
+    end
 
     -- Update the JumpHandler instance values when the MCM settings are changed
     Ext.RegisterNetListener("MCM_Saved_Setting", function(call, payload)
@@ -32,43 +46,14 @@ function JumpHandler:Init()
             return
         end
 
-        local settingUpdates = {
-            ["jump_check_interval"] = function(value)
-                FSDebug(0, "Setting jump check interval to " .. value)
-                self.JumpCheckInterval = value
-            end,
-            ["distance_threshold"] = function(value)
-                FSDebug(0, "Setting distance threshold to " .. value)
-                self.DistanceThreshold = value
-            end,
-            ["stop_threshold_time"] = function(value)
-                FSDebug(0, "Setting stop threshold time to " .. value)
-                self.StopThresholdTime = value
-            end,
-            ["ignore_if_fall_damage"] = function(value)
-                FSDebug(0, "Setting ignore if fall damage to " .. value)
-                self.IgnoreIfJumperTookFallDamage = value
-            end,
-            ["apply_fall_damage"] = function(value)
-                FSDebug(0, "Setting apply fall damage to " .. value)
-                self.EnableApplyFallDamage = value
-            end,
-            ["teleporting_method_enabled"] = function(value)
-                FSDebug(0, "Setting teleporting method enabled to " .. value)
-                self.ShouldTeleportCompanions = value
-            end,
-            ["jump_boosting_method_enabled"] = function(value)
-                FSDebug(0, "Setting jump boosting method enabled to " .. value)
-                self.ShouldBoostJump.enabled = value
-            end,
-            ["use_aggressive_method"] = function(value)
-                FSDebug(0, "Setting use aggressive jump boosting method to " .. value)
-                self.ShouldBoostJump.aggressive = value
+        local attribute = settingsMap[data.settingId]
+        if attribute then
+            if type(attribute) == "table" then
+                self[attribute[1]][attribute[2]] = data.value
+            else
+                self[attribute] = data.value
             end
-        }
-
-        if settingUpdates[data.settingId] then
-            settingUpdates[data.settingId](data.value)
+            FSDebug(1, string.format("Changing JumpHandler '%s' value to '%s'", data.settingId, tostring(data.value)))
         end
     end)
 end
@@ -97,26 +82,19 @@ end
 --     FSWarn(1, "JumpHandler:HandleHitpointsChanged: Exiting function")
 -- end
 
--- FIXME: only check linked characters
-function JumpHandler:CheckDistance()
+function JumpHandler:PartyCrossedDistanceThreshold()
     local hostPosition = { Osi.GetPosition(self.Jumper) }
+    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
 
-    local companions = Osi.DB_Players:Get(nil)
-    for i, companion in ipairs(companions) do
-        local companionGuid = VCHelpers.Format:Guid(companion[1])
-        if companionGuid ~= self.Jumper then
-            -- Retrieve companion's position
-            local companionPosition = { Osi.GetPosition(companionGuid) }
-            -- Calculate distance considering height
-            local distance = VCHelpers.Grid:GetDistance(hostPosition, companionPosition, true)
+    for i, companion in ipairs(filteredParty) do
+        local companionPosition = { Osi.GetPosition(companion) }
+        local distance = VCHelpers.Grid:GetDistance(hostPosition, companionPosition, true)
 
-            FSDebug(1,
-                "JumpHandler:CheckDistance: Distance to " ..
-                VCHelpers.Loca:GetDisplayName(companionGuid) .. " is " .. string.format("%.2fm", distance))
+        -- FSDebug(1, "JumpHandler:PartyCrossedDistanceThreshold: Distance to " ..
+        -- VCHelpers.Loca:GetDisplayName(companion) .. " is " .. string.format("%.2fm", distance))
 
-            if distance > self.DistanceThreshold then
-                return true
-            end
+        if distance > self.DistanceThreshold then
+            return true
         end
     end
 
@@ -136,24 +114,29 @@ end
 
 --- Handles the jump timer finished event
 function JumpHandler:HandleJumpTimerFinished()
-    if self.HandlingJump then
-        FSDebug(1, "JumpHandler:HandleJumpTimerFinished: Jump timer finished...")
+    if not self.HandlingJump then
+        return
+    end
 
-        -- Check if self.StopThresholdTime has passed since the first jump
-        if (self:CheckStopThresholdTime()) then
-            self.HandlingJump = false
-            return
-        end
+    FSDebug(1, "JumpHandler:HandleJumpTimerFinished: Jump timer finished...")
 
-        -- Check if the distance has been crossed
-        if (self:CheckDistance()) then
-            self.HandlingJump = false
-            if self.ShouldTeleportCompanions then
-                FSDebug(1, "JumpHandler:CheckDistance: Distance threshold crossed, teleporting party members...")
-                VCHelpers.Teleporting:TeleportLinkedPartyMembersToCharacter(self.Jumper)
-            end
-            return
+    -- Check if self.StopThresholdTime has passed since the first jump
+    if self:CheckStopThresholdTime() then
+        self.HandlingJump = false
+        return
+    end
+
+    -- Check if the distance has been crossed
+    if self:PartyCrossedDistanceThreshold() then
+        self.HandlingJump = false
+        if self.ShouldTeleportCompanions then
+            FSDebug(1,
+                "JumpHandler:PartyCrossedDistanceThreshold: Distance threshold crossed, teleporting party members...")
+            local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
+            VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty)
         end
+        return
+    end
 
     Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
         JumpHandlerInstance:HandleJumpTimerFinished()
@@ -178,17 +161,27 @@ end
 function JumpHandler:HandleJump(params)
     local Caster, CasterGuid, Spell, SpellType, SpellElement, StoryActionID = params.Caster, params.CasterGuid,
         params.Spell, params.SpellType, params.SpellElement, params.StoryActionID
+
     FSDebug(2, "JumpHandler:HandleJump called for character: " .. VCHelpers.Loca:GetDisplayName(CasterGuid))
-    if not self.HandlingJump and Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) == 1 then
-        self.Jumper = CasterGuid
-        FSDebug(1, "JumpHandler:HandleJump: Character is in party with host, handling...")
-        self.HandlingJump = true
 
-        if (self.ShouldBoostJump.enabled and self.ShouldBoostJump.aggressive) then
-            JumpHandler:BoostCompanionsJump()
-        end
+    if not CasterGuid
+        or Osi.IsInCombat(CasterGuid) ~= 0
+        or Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) ~= 1
+        or self.HandlingJump then
+        FSDebug(2,
+            "JumpHandler:HandleJump: Character is not in party with host, is in combat or a jump is already being handled. Not handling jump...")
+        return
+    end
 
-        self.FirstJumpTime = Ext.Utils.MonotonicTime()
+    self.Jumper = CasterGuid
+    FSDebug(1, "JumpHandler:HandleJump: Handling jump...")
+    self.HandlingJump = true
+
+    if self.ShouldBoostJump.enabled and self.ShouldBoostJump.aggressive then
+        JumpHandler:BoostCompanionsJump()
+    end
+
+    self.FirstJumpTime = Ext.Utils.MonotonicTime()
     Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
         JumpHandlerInstance:HandleJumpTimerFinished()
     end)
