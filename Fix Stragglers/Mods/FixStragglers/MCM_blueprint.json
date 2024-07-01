@@ -59,6 +59,19 @@
                                 "Max": 120
                             }
                         }
+                        // {
+                        //     "Id": "teleporting_keybind",
+                        //     "Name": "Teleporting keybind",
+                        //     "Type": "keybinding",
+                        //     "Default": {
+                        //         "Modifier": "None",
+                        //         "Key": "T"
+                        //     },
+                        //     "Description": "Keybind to teleport party members to the jumper.",
+                        //     "Options": {
+                        //         "AllowModifiers": true
+                        //     }
+                        // }
                     ]
                 },
                 {
@@ -129,9 +142,16 @@
                     ]
                 },
                 {
-                    "SectionId": "str_check",
-                    "SectionName": "Strength check",
+                    "SectionId": "party_checks",
+                    "SectionName": "Party checks",
                     "Settings": [
+                        {
+                            "Id": "only_linked_characters",
+                            "Name": "Only grouped/linked characters",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to only handle party members that are grouped or linked to the jumper."
+                        },
                         {
                             "Id": "enable_str_check",
                             "Name": "Use Strength check",
