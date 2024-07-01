@@ -5,16 +5,20 @@
         {
             "TabId": "features",
             "TabName": "Features",
-            "Settings": [
-                {
-                    "Id": "mod_enabled",
-                    "Name": "Enable Mod",
-                    "Type": "checkbox",
-                    "Default": true,
-                    "Description": "Toggle the mod on/off"
-                }
-            ],
             "Sections": [
+                {
+                    "SectionId": "General",
+                    "SectionName": "General",
+                    "Settings": [
+                        {
+                            "Id": "mod_enabled",
+                            "Name": "Enable mod",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Toggle the mod on/off."
+                        }
+                    ]
+                },
                 {
                     "SectionId": "teleporting_method",
                     "SectionName": "Teleporting method",
@@ -128,7 +132,7 @@
                             "Name": "Use aggressive jump boosting method",
                             "Type": "checkbox",
                             "Default": false,
-                            "Description": "Whether to buff jump distance for companions right when your character jumps",
+                            "Description": "Whether to buff jump distance for companions right when your character jumps.",
                             "VisibleIf": {
                                 "Conditions": [
                                     {
@@ -157,7 +161,7 @@
                             "Name": "Use Strength check",
                             "Type": "checkbox",
                             "Default": false,
-                            "Description": "If enabled, only party members with STR equal or higher than the jumper will be handled (teleported or buffed)."
+                            "Description": "If enabled, only party members with STR equal or higher than the jumper will be teleported or buffed."
                         }
                     ]
                 }
@@ -176,7 +180,7 @@
                         "Min": 0,
                         "Max": 2
                     },
-                    "Description": "0 = no debug, 1 = minimal, 2 = verbose debug logs"
+                    "Description": "0 = no debug, 1 = minimal, 2 = verbose debug logs."
                 }
             ]
         }
