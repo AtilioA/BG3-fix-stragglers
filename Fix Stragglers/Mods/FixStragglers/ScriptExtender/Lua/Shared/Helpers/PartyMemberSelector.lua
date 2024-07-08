@@ -47,6 +47,10 @@ function PartyMemberSelector:FilterPartyMembersFor(characterUUID)
 end
 
 function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
+    if member == characterUUID then
+        return false
+    end
+
     if not self:PassesStrengthCheck(member, characterUUID) then
         return false
     end
