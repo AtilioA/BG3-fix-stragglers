@@ -171,6 +171,11 @@ function JumpHandler:ShouldHandleJump(params)
         return false
     end
 
+    if Osi.IsControlled(CasterGuid) ~= 1 then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is not controlled, not handling jump...")
+        return false
+    end
+
     if Osi.IsInCombat(CasterGuid) ~= 0 then
         FSDebug(2, "JumpHandler:ShouldHandleJump: Character is in combat, not handling jump...")
         return false
@@ -185,6 +190,7 @@ function JumpHandler:ShouldHandleJump(params)
         FSDebug(2, "JumpHandler:ShouldHandleJump: Character is in camp, not handling jump...")
         return false
     end
+
     return true
 end
 
