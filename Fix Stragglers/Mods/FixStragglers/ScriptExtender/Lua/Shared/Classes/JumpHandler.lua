@@ -156,6 +156,38 @@ function JumpHandler:BoostCompanionsJump()
     end
 end
 
+--- Checks if the jump event should be handled
+---@param params VCCastedSpellParams
+function JumpHandler:ShouldHandleJump(params)
+    local CasterGuid = params.CasterGuid
+
+    if not CasterGuid then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is not valid, not handling jump...")
+        return false
+    end
+
+    if self.HandlingJump then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: A jump is already being handled, not handling jump...")
+        return false
+    end
+
+    if Osi.IsInCombat(CasterGuid) ~= 0 then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is in combat, not handling jump...")
+        return false
+    end
+
+    if Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) ~= 1 then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is not in party with host, not handling jump...")
+        return false
+    end
+
+    if VCHelpers.Character:IsCharacterInCamp(CasterGuid) then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is in camp, not handling jump...")
+        return false
+    end
+    return true
+end
+
 --- Handles the jump event
 ---@param params VCCastedSpellParams
 function JumpHandler:HandleJump(params)
@@ -164,12 +196,7 @@ function JumpHandler:HandleJump(params)
 
     FSDebug(2, "JumpHandler:HandleJump called for character: " .. VCHelpers.Loca:GetDisplayName(CasterGuid))
 
-    if not CasterGuid
-        or Osi.IsInCombat(CasterGuid) ~= 0
-        or Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) ~= 1
-        or self.HandlingJump then
-        FSDebug(2,
-            "JumpHandler:HandleJump: Character is not in party with host, is in combat or a jump is already being handled. Not handling jump...")
+    if not self:ShouldHandleJump(params) then
         return
     end
 
@@ -186,5 +213,3 @@ function JumpHandler:HandleJump(params)
         JumpHandlerInstance:HandleJumpTimerFinished()
     end)
 end
-
-return JumpHandler
