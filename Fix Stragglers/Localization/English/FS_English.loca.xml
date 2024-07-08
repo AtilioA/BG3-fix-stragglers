@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentList>
+    <content contentuid="h0d5d09cae3ba4dd682a556f542fb96d6905d" version="1">0 = no debug, 1 = minimal, 2 = verbose debug logs.</content>
+    <content contentuid="h77499842e1bc4f49b7aa2703719b74769bb3" version="1">Whether to teleport party members after some time and distance after jumping.</content>
+    <content contentuid="h15c7014d00c94bf0b760fe240477401d3a79" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the jumper.&lt;br&gt;3m = ~10ft</content>
+    <content contentuid="h36c7b7292c9f4822a37c17a32467fb81e45a" version="1">Interval in seconds between distance checks after jumping.&lt;br&gt;Will periodically check if party members have crossed the distance threshold.&lt;br&gt;This check is repeated every X seconds until the time threshold (set below) is reached.</content>
+    <content contentuid="h6b80cdc8f7dd4462bcccd240c01fed49aaff" version="1">Time threshold to stop checking for distance after jumping.&lt;br&gt;After this number of seconds, the mod will stop checking if party members crossed the distance threshold.</content>
+    <content contentuid="h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad" version="1">Keybind to teleport party members to the jumper.</content>
+    <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Whether to ignore teleporting party members if jumper took fall damage.</content>
+    <content contentuid="h5d60d107098540098301438a85c1fc50g654" version="1">Whether to apply fall damage to party members after teleporting if jumper took fall damage.</content>
+    <content contentuid="h9f020d218ff847b0b1ce71c1b9233b9c8gge" version="1">Whether to buff the jump distance for other characters so that they may try to keep up.</content>
+    <content contentuid="h21b8b24dce564043bd4e227f2acebdd23g04" version="1">Whether to buff jump distance for companions right when your character jumps.</content>
+    <content contentuid="he1faf010cea447b19f9dd1ef6ca720176775" version="1">Whether to only handle party members that are grouped or linked to the jumper.</content>
+    <content contentuid="hca9298b5534042ac85011f24f6d5b5f485a1" version="1">If enabled, only party members with STR equal or higher than the jumper will be teleported or buffed.</content>
+    <content contentuid="h3f0d2ff3cc57431cb0780bb8b27e1e2f7bag" version="1">Toggle the mod on/off.</content>
+    <content contentuid="heee1a7e5bd444eb18d50a0402c95a76bd288" version="1">Ignore if fall damage</content>
+    <content contentuid="hb5c8d3bf0dfe4b819797c16a7c645f495ae7" version="1">Enable teleporting method</content>
+    <content contentuid="h0dc4ecd51b0c42ffa14c8d3e99a2fb19abe9" version="1">Distance threshold (meters)</content>
+    <content contentuid="h1bda9c3b01ad4dc18a634e9a617e70851gg6" version="1">Jump check interval (seconds)</content>
+    <content contentuid="hef55c970144a4e39967041ba6d812190g9e1" version="1">Stop threshold time (seconds)</content>
+    <content contentuid="h2cb79271150c45039f01f7145903111c1e04" version="1">Enable mod</content>
+    <content contentuid="h3c3d6bb4d30e481986eae5200569e301dd31" version="1">Apply fall damage</content>
+    <content contentuid="hdc92f20b1c4a4a3794ee84a4c06654a41g03" version="1">Enable jump boosting method</content>
+    <content contentuid="hbb290480d6ac4fc09bf4a5e34dfe2c8ab417" version="1">Use aggressive jump boosting method</content>
+    <content contentuid="h29505655f80a4388a6acbe34583d658fbe38" version="1">Only grouped/linked characters</content>
+    <content contentuid="h27ad9876fafc44f4b709314e80ca8aa3af5f" version="1">Use Strength check</content>
+    <content contentuid="h7b15387a0d1d4aa4825f576c8f8ee5888315" version="1">Debug level</content>
+    <content contentuid="h9ac20dff50b24753aac11d2a8608b4e1e4bd" version="1">Debug</content>
+    <content contentuid="h1a7a529f42fc4b8a9759d056dbe0b544b54g" version="1">General</content>
+    <content contentuid="he6a0a3f1742a4404996e9fc19a8a06dbgb75" version="1">Features</content>
+    <content contentuid="h2e262b9fb6cb48ff81cc051fc7d90bd14165" version="1">Teleporting method</content>
+    <content contentuid="h074224a2070c4329a36dce867355aa7e5448" version="1">Teleporting method - fall damage settings</content>
+    <content contentuid="he1d4cde0a6654d74b4b5265d17cfc1eb1eac" version="1">Party checks</content>
+    <content contentuid="hb415bd57dc814792baa387f29368c489042b" version="1">Jump boosting method</content>
+</contentList>

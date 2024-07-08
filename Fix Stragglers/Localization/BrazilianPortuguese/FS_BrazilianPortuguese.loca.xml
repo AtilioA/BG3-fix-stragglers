@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentList>
+    <content contentuid="h0d5d09cae3ba4dd682a556f542fb96d6905d" version="1">0 = sem debug, 1 = mínimo, 2 = logs de debug verbosos.</content>
+    <content contentuid="h77499842e1bc4f49b7aa2703719b74769bb3" version="1">Se deve ou não teletransportar os membros do grupo após algum tempo e distância após um pulo.</content>
+    <content contentuid="h15c7014d00c94bf0b760fe240477401d3a79" version="1">Limite de distância em metros para teletransportar os membros do grupo.&lt;br&gt;Os membros serão teletransportados se estiverem a X metros de distância do saltador.</content>
+    <content contentuid="h36c7b7292c9f4822a37c17a32467fb81e45a" version="1">Intervalo em segundos entre as verificações de distância após o salto.&lt;br&gt;Verificará periodicamente se os membros do grupo cruzaram o limite de distância.&lt;br&gt;Essa verificação é repetida a cada X segundos até que o limite de tempo seja atingido.</content>
+    <content contentuid="h6b80cdc8f7dd4462bcccd240c01fed49aaff" version="1">Limite de tempo para parar de verificar a distância após o salto.&lt;br&gt;Após esse número de segundos, o mod deixará de verificar se os membros do grupo cruzaram o limite de distância.</content>
+    <content contentuid="h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad" version="1">Tecla de atalho para teletransportar os membros do grupo para o saltador.</content>
+    <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Se deve ou não ignorar o teletransporte dos membros do grupo se o saltador sofreu dano de queda.</content>
+    <content contentuid="h5d60d107098540098301438a85c1fc50g654" version="1">Se deve ou não aplicar dano de queda aos membros do grupo após o teletransporte, caso o saltador tenha sofrido dano de queda.</content>
+    <content contentuid="h9f020d218ff847b0b1ce71c1b9233b9c8gge" version="1">Se deve ou não aumentar a distância de salto para outros personagens, para que eles possam tentar acompanhar.</content>
+    <content contentuid="h21b8b24dce564043bd4e227f2acebdd23g04" version="1">Se deve ou não aumentar a distância de salto dos companheiros assim que seu personagem pular.</content>
+    <content contentuid="he1faf010cea447b19f9dd1ef6ca720176775" version="1">Se deve ou não lidar apenas com os membros do grupo que estão agrupados ou vinculados ao saltador.</content>
+    <content contentuid="hca9298b5534042ac85011f24f6d5b5f485a1" version="1">Se habilitado, apenas os membros do grupo com FOR igual ou superior à do saltador serão teletransportados ou recebem buff.</content>
+    <content contentuid="h3f0d2ff3cc57431cb0780bb8b27e1e2f7bag" version="1">Ativar/desativar o mod.</content>
+    <content contentuid="heee1a7e5bd444eb18d50a0402c95a76bd288" version="1">Ignorar se houver dano de queda</content>
+    <content contentuid="hb5c8d3bf0dfe4b819797c16a7c645f495ae7" version="1">Ativar método de teletransporte</content>
+    <content contentuid="h0dc4ecd51b0c42ffa14c8d3e99a2fb19abe9" version="1">Limite de distância (metros)</content>
+    <content contentuid="h1bda9c3b01ad4dc18a634e9a617e70851gg6" version="1">Intervalo de verificação de salto (segundos)</content>
+    <content contentuid="hef55c970144a4e39967041ba6d812190g9e1" version="1">Limite de tempo de parada (segundos)</content>
+    <content contentuid="h2cb79271150c45039f01f7145903111c1e04" version="1">Ativar mod</content>
+    <content contentuid="h3c3d6bb4d30e481986eae5200569e301dd31" version="1">Aplicar dano de queda</content>
+    <content contentuid="hdc92f20b1c4a4a3794ee84a4c06654a41g03" version="1">Ativar método de aumento de salto</content>
+    <content contentuid="hbb290480d6ac4fc09bf4a5e34dfe2c8ab417" version="1">Usar método agressivo de aumento de salto</content>
+    <content contentuid="h29505655f80a4388a6acbe34583d658fbe38" version="1">Apenas personagens agrupados/vinculados</content>
+    <content contentuid="h27ad9876fafc44f4b709314e80ca8aa3af5f" version="1">Usar verificação de Força</content>
+    <content contentuid="h7b15387a0d1d4aa4825f576c8f8ee5888315" version="1">Nível de debug</content>
+    <content contentuid="h9ac20dff50b24753aac11d2a8608b4e1e4bd" version="1">Debug</content>
+    <content contentuid="h1a7a529f42fc4b8a9759d056dbe0b544b54g" version="1">Geral</content>
+    <content contentuid="he6a0a3f1742a4404996e9fc19a8a06dbgb75" version="1">Recursos</content>
+    <content contentuid="h2e262b9fb6cb48ff81cc051fc7d90bd14165" version="1">Método de teletransporte</content>
+    <content contentuid="h074224a2070c4329a36dce867355aa7e5448" version="1">Método de teletransporte - configurações de dano de queda</content>
+    <content contentuid="he1d4cde0a6654d74b4b5265d17cfc1eb1eac" version="1">Verificações de grupo</content>
+    <content contentuid="hb415bd57dc814792baa387f29368c489042b" version="1">Método de aumento de salto</content>
+</contentList>

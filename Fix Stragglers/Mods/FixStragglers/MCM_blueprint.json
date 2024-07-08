@@ -5,14 +5,24 @@
         {
             "TabId": "features",
             "TabName": "Features",
+            "Handles": {
+                "NameHandle": "he6a0a3f1742a4404996e9fc19a8a06dbgb75"
+            },
             "Sections": [
                 {
                     "SectionId": "General",
                     "SectionName": "General",
+                    "Handles": {
+                        "NameHandle": "h1a7a529f42fc4b8a9759d056dbe0b544b54g"
+                    },
                     "Settings": [
                         {
                             "Id": "mod_enabled",
                             "Name": "Enable mod",
+                            "Handles": {
+                                "NameHandle": "h2cb79271150c45039f01f7145903111c1e04",
+                                "DescriptionHandle": "h3f0d2ff3cc57431cb0780bb8b27e1e2f7bag"
+                            },
                             "Type": "checkbox",
                             "Default": true,
                             "Description": "Toggle the mod on/off."
@@ -22,17 +32,28 @@
                 {
                     "SectionId": "teleporting_method",
                     "SectionName": "Teleporting method",
+                    "Handles": {
+                        "NameHandle": "h2e262b9fb6cb48ff81cc051fc7d90bd14165"
+                    },
                     "Settings": [
                         {
                             "Id": "teleporting_method_enabled",
                             "Name": "Enable teleporting method",
+                            "Handles": {
+                                "NameHandle": "hb5c8d3bf0dfe4b819797c16a7c645f495ae7",
+                                "DescriptionHandle": "h77499842e1bc4f49b7aa2703719b74769bb3"
+                            },
                             "Type": "checkbox",
-                            "Description": "Whether to teleport party members after some time and distance after jumping.",
-                            "Default": true
+                            "Default": true,
+                            "Description": "Whether to teleport party members after some time and distance after jumping."
                         },
                         {
                             "Id": "distance_threshold",
-                            "Name": "Distance threshold (m)",
+                            "Name": "Distance threshold (meters)",
+                            "Handles": {
+                                "NameHandle": "h0dc4ecd51b0c42ffa14c8d3e99a2fb19abe9",
+                                "DescriptionHandle": "h15c7014d00c94bf0b760fe240477401d3a79"
+                            },
                             "Type": "slider_int",
                             "Default": 25,
                             "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n3m = ~10ft",
@@ -42,19 +63,12 @@
                             }
                         },
                         {
-                            "Id": "jump_check_interval",
-                            "Name": "Jump check interval (s)",
-                            "Type": "slider_int",
-                            "Default": 5,
-                            "Description": "Interval in seconds between distance checks after jumping.\nWill periodically check if party members have crossed the distance threshold.\nThis check is repeated every X seconds until the time threshold (set below) is reached.",
-                            "Options": {
-                                "Min": 1,
-                                "Max": 10
-                            }
-                        },
-                        {
                             "Id": "stop_threshold_time",
-                            "Name": "Stop threshold time (s)",
+                            "Name": "Stop threshold time (seconds)",
+                            "Handles": {
+                                "NameHandle": "hef55c970144a4e39967041ba6d812190g9e1",
+                                "DescriptionHandle": "h6b80cdc8f7dd4462bcccd240c01fed49aaff"
+                            },
                             "Type": "slider_int",
                             "Default": 30,
                             "Description": "Time threshold to stop checking for distance after jumping.\nAfter this number of seconds, the mod will stop checking if party members crossed the distance threshold.",
@@ -62,10 +76,29 @@
                                 "Min": 5,
                                 "Max": 120
                             }
+                        },
+                        {
+                            "Id": "jump_check_interval",
+                            "Name": "Jump check interval (seconds)",
+                            "Handles": {
+                                "NameHandle": "h1bda9c3b01ad4dc18a634e9a617e70851gg6",
+                                "DescriptionHandle": "h36c7b7292c9f4822a37c17a32467fb81e45a"
+                            },
+                            "Type": "slider_int",
+                            "Default": 5,
+                            "Description": "Interval in seconds between distance checks after jumping.\nWill periodically check if party members have crossed the distance threshold.\nThis check is repeated every X seconds until the time threshold is reached.",
+                            "Options": {
+                                "Min": 1,
+                                "Max": 10
+                            }
                         }
                         // {
                         //     "Id": "teleporting_keybind",
                         //     "Name": "Teleporting keybind",
+                        //     "Handles": {
+                        //         "NameHandle": "Teleporting keybind",
+                        //         "DescriptionHandle": "h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad"
+                        //     },
                         //     "Type": "keybinding",
                         //     "Default": {
                         //         "Modifier": "None",
@@ -81,10 +114,17 @@
                 {
                     "SectionName": "Teleporting method - fall damage settings",
                     "SectionId": "fall_damage_settings",
+                    "Handles": {
+                        "NameHandle": "h074224a2070c4329a36dce867355aa7e5448"
+                    },
                     "Settings": [
                         {
                             "Id": "ignore_if_fall_damage",
                             "Name": "Ignore if fall damage",
+                            "Handles": {
+                                "NameHandle": "heee1a7e5bd444eb18d50a0402c95a76bd288",
+                                "DescriptionHandle": "hb35a24d15f3244ea9c4d693565f181b7298a"
+                            },
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "Whether to ignore teleporting party members if jumper took fall damage."
@@ -92,6 +132,10 @@
                         {
                             "Id": "apply_fall_damage",
                             "Name": "Apply fall damage",
+                            "Handles": {
+                                "NameHandle": "h3c3d6bb4d30e481986eae5200569e301dd31",
+                                "DescriptionHandle": "h5d60d107098540098301438a85c1fc50g654"
+                            },
                             "Type": "checkbox",
                             "Default": true,
                             "Description": "Whether to apply fall damage to party members after teleporting if jumper took fall damage.",
@@ -99,8 +143,8 @@
                                 "Conditions": [
                                     {
                                         "SettingId": "ignore_if_fall_damage",
-                                        "ExpectedValue": "false",
-                                        "Operator": "=="
+                                        "ExpectedValue": "true",
+                                        "Operator": "!="
                                     }
                                 ]
                             }
@@ -119,10 +163,17 @@
                 {
                     "SectionId": "jump_boosting_method",
                     "SectionName": "Jump boosting method",
+                    "Handles": {
+                        "NameHandle": "hb415bd57dc814792baa387f29368c489042b"
+                    },
                     "Settings": [
                         {
                             "Id": "jump_boosting_method_enabled",
                             "Name": "Enable jump boosting method",
+                            "Handles": {
+                                "NameHandle": "hdc92f20b1c4a4a3794ee84a4c06654a41g03",
+                                "DescriptionHandle": "h9f020d218ff847b0b1ce71c1b9233b9c8gge"
+                            },
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
@@ -130,6 +181,10 @@
                         {
                             "Id": "use_aggressive_method",
                             "Name": "Use aggressive jump boosting method",
+                            "Handles": {
+                                "NameHandle": "hbb290480d6ac4fc09bf4a5e34dfe2c8ab417",
+                                "DescriptionHandle": "h21b8b24dce564043bd4e227f2acebdd23g04"
+                            },
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "Whether to buff jump distance for companions right when your character jumps.",
@@ -148,10 +203,17 @@
                 {
                     "SectionId": "party_checks",
                     "SectionName": "Party checks",
+                    "Handles": {
+                        "NameHandle": "he1d4cde0a6654d74b4b5265d17cfc1eb1eac"
+                    },
                     "Settings": [
                         {
                             "Id": "only_linked_characters",
                             "Name": "Only grouped/linked characters",
+                            "Handles": {
+                                "NameHandle": "h29505655f80a4388a6acbe34583d658fbe38",
+                                "DescriptionHandle": "he1faf010cea447b19f9dd1ef6ca720176775"
+                            },
                             "Type": "checkbox",
                             "Default": true,
                             "Description": "Whether to only handle party members that are grouped or linked to the jumper."
@@ -159,6 +221,10 @@
                         {
                             "Id": "enable_str_check",
                             "Name": "Use Strength check",
+                            "Handles": {
+                                "NameHandle": "h27ad9876fafc44f4b709314e80ca8aa3af5f",
+                                "DescriptionHandle": "hca9298b5534042ac85011f24f6d5b5f485a1"
+                            },
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "If enabled, only party members with STR equal or higher than the jumper will be teleported or buffed."
@@ -170,10 +236,17 @@
         {
             "TabId": "debug",
             "TabName": "Debug",
+            "Handles": {
+                "NameHandle": "h9ac20dff50b24753aac11d2a8608b4e1e4bd"
+            },
             "Settings": [
                 {
                     "Id": "debug_level",
-                    "Name": "Debug Level",
+                    "Name": "Debug level",
+                    "Handles": {
+                        "NameHandle": "h7b15387a0d1d4aa4825f576c8f8ee5888315",
+                        "DescriptionHandle": "h0d5d09cae3ba4dd682a556f542fb96d6905d"
+                    },
                     "Type": "slider_int",
                     "Default": 0,
                     "Options": {
