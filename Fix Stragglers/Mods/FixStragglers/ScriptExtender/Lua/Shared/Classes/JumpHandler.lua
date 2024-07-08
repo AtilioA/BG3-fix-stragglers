@@ -147,12 +147,10 @@ end
 function JumpHandler:BoostCompanionsJump()
     FSDebug(1, "JumpHandler:BoostCompanionsJump: Boosting companions jump...")
 
-    local companions = Osi.DB_Players:Get(nil)
+    local companions = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
     for i, companion in pairs(companions) do
-        if companion ~= self.Jumper then
-            local companionGuid = companion
-            local companionCharacter = Ext.Entity.Get(companionGuid)
-        end
+        Osi.ApplyStatus(companion, "POTION_OF_STRENGTH_HILL_GIANT", 6, 100, "100")
+        Osi.ApplyStatus(companion, "LONG_JUMP", 6, 100, "100")
     end
 end
 
@@ -211,7 +209,7 @@ function JumpHandler:HandleJump(params)
     self.HandlingJump = true
 
     if self.ShouldBoostJump.enabled and self.ShouldBoostJump.aggressive then
-        JumpHandler:BoostCompanionsJump()
+        JumpHandlerInstance:BoostCompanionsJump()
     end
 
     self.FirstJumpTime = Ext.Utils.MonotonicTime()
