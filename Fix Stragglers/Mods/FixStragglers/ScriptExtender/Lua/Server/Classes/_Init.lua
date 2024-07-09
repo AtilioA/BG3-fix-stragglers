@@ -1,0 +1,3 @@
+RequireFiles("Server/Classes/", {
+    "JumpHandler"
+})

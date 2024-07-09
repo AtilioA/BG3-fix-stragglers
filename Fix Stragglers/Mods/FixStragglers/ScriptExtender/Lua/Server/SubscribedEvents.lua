@@ -32,6 +32,8 @@ function SubscribedEvents:SubscribeToEvents()
         FSDebug(0,
             "Object: " .. object .. " Damage: " .. damage .. " DamageType: " .. damageType .. " Source: " .. source)
     end)
+
+    Ext.RegisterNetListener("FS_TeleportPartyToYou", EHandlers.OnTPYButtonPress)
 end
 
 return SubscribedEvents

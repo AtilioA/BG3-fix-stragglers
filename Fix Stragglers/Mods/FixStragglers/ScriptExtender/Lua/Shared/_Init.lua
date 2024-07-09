@@ -16,17 +16,13 @@ local currentModName = getModName(ModuleUUID)
 if not Ext.Mod.IsModLoaded(deps.VCModuleUUID) then
     Ext.Utils.PrintError(
         string.format("%s requires %s, which is missing. PLEASE MAKE SURE IT IS ENABLED IN YOUR MOD MANAGER.",
-        currentModName, getModName(deps.VCModuleUUID)))
+            currentModName, getModName(deps.VCModuleUUID)))
 end
 
 if not Ext.Mod.IsModLoaded(deps.MCMModuleUUID) then
     Ext.Utils.PrintError(
         string.format("%s requires %s, which is missing. PLEASE MAKE SURE IT IS ENABLED IN YOUR MOD MANAGER.",
-        currentModName, getModName(deps.MCMModuleUUID)))
-end
-
-function MCMGet(settingID)
-    return Mods.BG3MCM.MCMAPI:GetSettingValue(settingID, ModuleUUID)
+            currentModName, getModName(deps.MCMModuleUUID)))
 end
 
 ---Ext.Require files at the path
@@ -38,25 +34,7 @@ function RequireFiles(path, files)
     end
 end
 
-RequireFiles("Shared/", {
-    "MetaClass",
-    "Helpers/_Init",
-    "Classes/_Init",
-    "SubscribedEvents",
-    "EventHandlers",
-})
 
-local MODVERSION = Ext.Mod.GetMod(ModuleUUID).Info.ModVersion
-if MODVERSION == nil then
-    FSWarn(0, "loaded (version unknown)")
-else
-    -- Remove the last element (build/revision number) from the MODVERSION table
-    table.remove(MODVERSION)
-
-    local versionNumber = table.concat(MODVERSION, ".")
-    FSPrint(0, "Fix Stragglers version " .. versionNumber .. " loaded")
+function MCMGet(settingID)
+    return Mods.BG3MCM.MCMAPI:GetSettingValue(settingID, ModuleUUID)
 end
-
-JumpHandlerInstance = JumpHandler:New()
-
-SubscribedEvents.SubscribeToEvents()

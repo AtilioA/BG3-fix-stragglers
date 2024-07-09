@@ -3,15 +3,15 @@
     "ModName": "Fix Stragglers",
     "Tabs": [
         {
-            "TabId": "features",
-            "TabName": "Features",
+            "TabId": "general",
+            "TabName": "General",
             "Handles": {
                 "NameHandle": "he6a0a3f1742a4404996e9fc19a8a06dbgb75"
             },
             "Sections": [
                 {
                     "SectionId": "General",
-                    "SectionName": "General",
+                    "SectionName": "General settings",
                     "Handles": {
                         "NameHandle": "h1a7a529f42fc4b8a9759d056dbe0b544b54g"
                     },
@@ -26,9 +26,52 @@
                             "Type": "checkbox",
                             "Default": true,
                             "Description": "Toggle the mod on/off."
+                        },
+                        {
+                            "Id": "debug_level",
+                            "Name": "Debug level",
+                            "Handles": {
+                                "NameHandle": "h7b15387a0d1d4aa4825f576c8f8ee5888315",
+                                "DescriptionHandle": "h0d5d09cae3ba4dd682a556f542fb96d6905d"
+                            },
+                            "Type": "slider_int",
+                            "Default": 0,
+                            "Options": {
+                                "Min": 0,
+                                "Max": 2
+                            },
+                            "Description": "0 = no debug, 1 = minimal, 2 = verbose debug logs."
                         }
                     ]
                 },
+                {
+                    "SectionId": "teleport_party_to_you",
+                    "SectionName": "Teleport party to you",
+                    "Handles": {
+                        "NameHandle": "Teleport party to you"
+                    },
+                    "Settings": [
+                        {
+                            "Id": "key_teleport_party_to_you",
+                            "Name": "Teleport party to you shortcut",
+                            "Type": "keybinding",
+                            "Default": {
+                                "Modifier": "LShift",
+                                "ScanCode": "T"
+                            },
+                            "Description": "Teleports the party to you by pressing this key combination."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "TabId": "features",
+            "TabName": "Features",
+            "Handles": {
+                "NameHandle": "h9ac20dff50b24753aac11d2a8608b4e1e4bd"
+            },
+            "Sections": [
                 {
                     "SectionId": "teleporting_method",
                     "SectionName": "Teleporting method",
@@ -230,30 +273,6 @@
                             "Description": "If enabled, only party members with STR equal or higher than the jumper will be teleported or buffed."
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "TabId": "debug",
-            "TabName": "Debug",
-            "Handles": {
-                "NameHandle": "h9ac20dff50b24753aac11d2a8608b4e1e4bd"
-            },
-            "Settings": [
-                {
-                    "Id": "debug_level",
-                    "Name": "Debug level",
-                    "Handles": {
-                        "NameHandle": "h7b15387a0d1d4aa4825f576c8f8ee5888315",
-                        "DescriptionHandle": "h0d5d09cae3ba4dd682a556f542fb96d6905d"
-                    },
-                    "Type": "slider_int",
-                    "Default": 0,
-                    "Options": {
-                        "Min": 0,
-                        "Max": 2
-                    },
-                    "Description": "0 = no debug, 1 = minimal, 2 = verbose debug logs."
                 }
             ]
         }

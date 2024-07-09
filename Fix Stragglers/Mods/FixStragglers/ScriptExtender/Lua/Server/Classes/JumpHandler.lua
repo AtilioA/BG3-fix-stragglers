@@ -115,6 +115,10 @@ end
 --- Teleports the companions to the jumper.
 --- PMSelector will filter out according to user settings and game conditions
 function JumpHandler:TeleportCompanions()
+    if not self.Jumper then
+        self.Jumper = Osi.GetHostCharacter()
+    end
+
     local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
     VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty)
 end
