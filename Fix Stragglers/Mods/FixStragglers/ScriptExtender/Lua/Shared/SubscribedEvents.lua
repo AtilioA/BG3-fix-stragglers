@@ -18,7 +18,7 @@ function SubscribedEvents:SubscribeToEvents()
     -- Event subscriptions
     Events.Osiris.CastedSpell:Subscribe(conditionalWrapper(EHandlers.OnCastedSpell))
 
-    Ext.Osiris.RegisterListener("HitpointsChanged", 2, "after", conditionalWrapper(EHandlers.OnHitpointsChanged))
+    -- Ext.Osiris.RegisterListener("HitpointsChanged", 2, "after", conditionalWrapper(EHandlers.OnHitpointsChanged))
 
     Ext.Osiris.RegisterListener("MoveCapabilityChanged", 2, "after", function(character, isEnabled)
         _D(character)

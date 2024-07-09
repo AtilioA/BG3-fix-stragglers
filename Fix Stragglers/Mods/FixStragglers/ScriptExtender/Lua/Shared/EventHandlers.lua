@@ -6,9 +6,9 @@ function EHandlers.OnCastedSpell(params)
     end
 end
 
-function EHandlers.OnHitpointsChanged(entity, percentage)
-    return JumpHandlerInstance:HandleHitpointsChanged(entity, percentage)
-end
+-- function EHandlers.OnHitpointsChanged(entity, percentage)
+--     return JumpHandlerInstance:HandleHitpointsChanged(entity, percentage)
+-- end
 
 Ext.Osiris.RegisterListener("AttackedBy", 7, "after",
     function(defender, attackerOwner, attacker2, damageType, damageAmount, damageCause, storyActionID)
