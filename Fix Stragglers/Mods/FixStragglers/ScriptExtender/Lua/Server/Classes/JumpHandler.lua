@@ -264,6 +264,11 @@ function JumpHandler:ShouldHandleJump(params)
         return false
     end
 
+    if self.IgnoreIfJumperTookFallDamage and self:ProxyCheckFallDamage(CasterGuid) then
+        FSDebug(2, "JumpHandler:ShouldHandleJump: Character potentially took fall damage, not handling jump...")
+        return false
+    end
+
     return true
 end
 
@@ -292,3 +297,72 @@ function JumpHandler:HandleJump(params)
         JumpHandlerInstance:HandleJumpTimerFinished()
     end)
 end
+
+-- Since checking for fall damage is tricky given the current API, we'll use an approximation
+-- This will check if the jumper is considerably lower than other party members at the time of landing the jump
+-- This does not account for the actual fall damage taken by the jumper, and will fail to consider certain scenarios
+-- However, this is a good approximation and it is not anything serious or game-breaking in any case.
+---@param jumper string GUID of the jumper
+function JumpHandler:ProxyCheckFallDamage(jumper)
+    local fallThreshold = 3
+    -- Check if character is considerably lower than other party members
+    -- For checks, use 3 meters as the threshold (y value)
+    local jumperPos = { Osi.GetPosition(jumper) }
+    if not jumperPos then
+        return false
+    end
+    local jumperPosition = {
+        x = jumperPos[1],
+        y = jumperPos[2],
+        z = jumperPos[3]
+    }
+
+    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(jumper)
+    -- Iterate all party members and check if they are considerably higher than the jumper. If any of them are, return true
+    for i, companion in ipairs(filteredParty) do
+        local companionPos = { Osi.GetPosition(companion) }
+        if not companionPos then
+            return false
+        end
+        local companionPosition = {
+            x = companionPos[1],
+            y = companionPos[2],
+            z = companionPos[3]
+        }
+
+        if companionPosition.y > jumperPosition.y + fallThreshold then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- function JumpHandler:HandleFallDamage(jumper, damageAmount)
+--     local function applyFallDamageToCompanions(filteredParty)
+--         for i, companion in ipairs(filteredParty) do
+--             -- Check for feather fall ("FEATHER_FALL")
+--             if Osi.HasActiveStatus(companion, "FEATHER_FALL") == 0 and Osi.HasActiveStatus(companion, "LEVITATE") == 0 then
+--                 FSDebug(2,
+--                     "JumpHandler:HandleFallDamage: Applying fall damage to " .. VCHelpers.Loca:GetDisplayName(companion))
+--                 if companion ~= self.Jumper then
+--                     Osi.ApplyDamage(companion, damageAmount, "FallDamage", self.Jumper)
+--                 end
+--             end
+--         end
+--     end
+
+--     -- The jumper has taken fall damage
+--     if self.IgnoreIfJumperTookFallDamage then
+--         -- Don't teleport if the jumper took fall damage
+--         FSDebug(1, "JumpHandler:HandleFallDamage: Jumper took fall damage, stopping jump handling...")
+--         self.HandlingJump = false
+--         return
+--     elseif self.EnableApplyFallDamage then
+--         FSDebug(1, "JumpHandler:HandleFallDamage: Applying fall damage to companions...")
+--         -- Apply fall damage to teleported characters
+--         -- NOTE: this is not actually calculating the fall damage, but is a good enough approximation
+--         local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
+--         applyFallDamageToCompanions(filteredParty)
+--     end
+-- end
