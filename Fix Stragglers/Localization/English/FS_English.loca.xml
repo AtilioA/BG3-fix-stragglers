@@ -6,7 +6,7 @@
     <content contentuid="h36c7b7292c9f4822a37c17a32467fb81e45a" version="1">Interval in seconds between distance checks after jumping.&lt;br&gt;Will periodically check if party members have crossed the distance threshold.&lt;br&gt;This check is repeated every X seconds until the time threshold (set below) is reached.</content>
     <content contentuid="h6b80cdc8f7dd4462bcccd240c01fed49aaff" version="1">Time threshold to stop checking for distance after jumping.&lt;br&gt;After this number of seconds, the mod will stop checking if party members crossed the distance threshold.</content>
     <content contentuid="h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad" version="1">Keybind to teleport party members to the jumper.</content>
-    <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Whether to ignore teleporting party members if jumper took fall damage.</content>
+    <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Whether to ignore teleporting party members if jumper took fall damage.&lt;br&gt;Due to API limitations, it does not check for actual fall damage; this verification is just an approximation.</content>
     <content contentuid="h5d60d107098540098301438a85c1fc50g654" version="1">Whether to apply fall damage to party members after teleporting if jumper took fall damage.</content>
     <content contentuid="h9f020d218ff847b0b1ce71c1b9233b9c8gge" version="1">Whether to buff the jump distance for other characters so that they may try to keep up.</content>
     <content contentuid="h21b8b24dce564043bd4e227f2acebdd23g04" version="1">Whether to buff jump distance for companions right when your character jumps.</content>
@@ -32,4 +32,8 @@
     <content contentuid="h074224a2070c4329a36dce867355aa7e5448" version="1">Teleporting method - fall damage settings</content>
     <content contentuid="he1d4cde0a6654d74b4b5265d17cfc1eb1eac" version="1">Party checks</content>
     <content contentuid="hb415bd57dc814792baa387f29368c489042b" version="1">Jump boosting method</content>
+    <content contentuid="ha7b4f0e3829e4c01ae9a98adf577ec7c8e3g" version="1">Teleport party to you</content>
+    <content contentuid="hc134f0a9573649e281d86a7342621cb39cfa" version="1">Keybindings/buttons that allow you to teleport the party to you manually.</content>
+    <content contentuid="hc0a17ac62b694b6b822b1eee46a8993fabfc" version="1">Teleports the party to you by pressing this key combination.</content>
+    <content contentuid="h5c93cdf83dd1475f9af3bd8fe6b8df544573" version="1">Teleport party to you shortcut</content>
 </contentList>

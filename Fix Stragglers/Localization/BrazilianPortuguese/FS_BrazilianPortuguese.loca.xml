@@ -6,7 +6,7 @@
     <content contentuid="h36c7b7292c9f4822a37c17a32467fb81e45a" version="1">Intervalo em segundos entre as verificações de distância após o salto.&lt;br&gt;Verificará periodicamente se os membros do grupo cruzaram o limite de distância.&lt;br&gt;Essa verificação é repetida a cada X segundos até que o limite de tempo seja atingido.</content>
     <content contentuid="h6b80cdc8f7dd4462bcccd240c01fed49aaff" version="1">Limite de tempo para parar de verificar a distância após o salto.&lt;br&gt;Após esse número de segundos, o mod deixará de verificar se os membros do grupo cruzaram o limite de distância.</content>
     <content contentuid="h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad" version="1">Tecla de atalho para teletransportar os membros do grupo para o saltador.</content>
-    <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Se deve ou não ignorar o teletransporte dos membros do grupo se o saltador sofreu dano de queda.</content>
+    <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Se deve ou não ignorar o teletransporte dos membros do grupo se o saltador sofreu dano de queda.&lt;br&gt;Não checa por dano de queda realmente, a verificação é apenas uma aproximação.</content>
     <content contentuid="h5d60d107098540098301438a85c1fc50g654" version="1">Se deve ou não aplicar dano de queda aos membros do grupo após o teletransporte, caso o saltador tenha sofrido dano de queda.</content>
     <content contentuid="h9f020d218ff847b0b1ce71c1b9233b9c8gge" version="1">Se deve ou não aumentar a distância de salto para outros personagens, para que eles possam tentar acompanhar.</content>
     <content contentuid="h21b8b24dce564043bd4e227f2acebdd23g04" version="1">Se deve ou não aumentar a distância de salto dos companheiros assim que seu personagem pular.</content>
@@ -31,5 +31,9 @@
     <content contentuid="h2e262b9fb6cb48ff81cc051fc7d90bd14165" version="1">Método de teletransporte</content>
     <content contentuid="h074224a2070c4329a36dce867355aa7e5448" version="1">Método de teletransporte - configurações de dano de queda</content>
     <content contentuid="he1d4cde0a6654d74b4b5265d17cfc1eb1eac" version="1">Verificações de grupo</content>
-    <content contentuid="hb415bd57dc814792baa387f29368c489042b" version="1">Método de aumento de salto</content>
+    <content contentuid="hb415bd57dc814792baa387f29368c489042b" version="1">Método de aumento de pulo</content>
+    <content contentuid="ha7b4f0e3829e4c01ae9a98adf577ec7c8e3g" version="1">Teletransportar grupo até você</content>
+    <content contentuid="hc134f0a9573649e281d86a7342621cb39cfa" version="1">Atalhos/botões que permitem que você teletransporte o grupo até você manualmente.</content>
+    <content contentuid="hc0a17ac62b694b6b822b1eee46a8993fabfc" version="1">Teletransporta o grupo até você ao pressionar esse atalho.</content>
+    <content contentuid="h5c93cdf83dd1475f9af3bd8fe6b8df544573" version="1">Atalho para teletransportar grupo até você</content>
 </contentList>

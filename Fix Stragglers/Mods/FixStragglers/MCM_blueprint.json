@@ -10,7 +10,7 @@
             },
             "Sections": [
                 {
-                    "SectionId": "General",
+                    "SectionId": "general",
                     "SectionName": "General settings",
                     "Handles": {
                         "NameHandle": "h1a7a529f42fc4b8a9759d056dbe0b544b54g"
@@ -47,8 +47,10 @@
                 {
                     "SectionId": "teleport_party_to_you",
                     "SectionName": "Teleport party to you",
+                    "SectionDescription": "Keybindings/buttons that allow you to teleport the party to you manually.",
                     "Handles": {
-                        "NameHandle": "Teleport party to you"
+                        "NameHandle": "ha7b4f0e3829e4c01ae9a98adf577ec7c8e3g",
+                        "DescriptionHandle": "hc134f0a9573649e281d86a7342621cb39cfa"
                     },
                     "Settings": [
                         {
@@ -59,7 +61,11 @@
                                 "Modifier": "LShift",
                                 "ScanCode": "T"
                             },
-                            "Description": "Teleports the party to you by pressing this key combination."
+                            "Description": "Teleports the party to you by pressing this key combination.",
+                            "Handles": {
+                                "NameHandle": "h5c93cdf83dd1475f9af3bd8fe6b8df544573",
+                                "DescriptionHandle": "hc0a17ac62b694b6b822b1eee46a8993fabfc"
+                            }
                         }
                     ]
                 }
@@ -75,8 +81,10 @@
                 {
                     "SectionId": "teleporting_method",
                     "SectionName": "Teleporting method",
+                    "SectionDescription": "These settings allow you to optionally configure the teleporting method.\nThe defaults should work for most cases, feel free to report better values on Nexus.",
                     "Handles": {
-                        "NameHandle": "h2e262b9fb6cb48ff81cc051fc7d90bd14165"
+                        "NameHandle": "h2e262b9fb6cb48ff81cc051fc7d90bd14165",
+                        "DescriptionHandle": "These settings allow you to optionally configure the teleporting method.\nThe defaults should work for most cases, feel free to report better values on Nexus."
                     },
                     "Settings": [
                         {
@@ -98,7 +106,7 @@
                                 "DescriptionHandle": "h15c7014d00c94bf0b760fe240477401d3a79"
                             },
                             "Type": "slider_int",
-                            "Default": 25,
+                            "Default": 24,
                             "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n3m = ~10ft",
                             "Options": {
                                 "Min": 1,
@@ -128,7 +136,7 @@
                                 "DescriptionHandle": "h36c7b7292c9f4822a37c17a32467fb81e45a"
                             },
                             "Type": "slider_int",
-                            "Default": 5,
+                            "Default": 2,
                             "Description": "Interval in seconds between distance checks after jumping.\nWill periodically check if party members have crossed the distance threshold.\nThis check is repeated every X seconds until the time threshold is reached.",
                             "Options": {
                                 "Min": 1,
@@ -220,26 +228,6 @@
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
-                        },
-                        {
-                            "Id": "use_aggressive_method",
-                            "Name": "Use aggressive jump boosting method",
-                            "Handles": {
-                                "NameHandle": "hbb290480d6ac4fc09bf4a5e34dfe2c8ab417",
-                                "DescriptionHandle": "h21b8b24dce564043bd4e227f2acebdd23g04"
-                            },
-                            "Type": "checkbox",
-                            "Default": false,
-                            "Description": "Whether to buff jump distance for companions right when your character jumps.",
-                            "VisibleIf": {
-                                "Conditions": [
-                                    {
-                                        "SettingId": "jump_boosting_method_enabled",
-                                        "ExpectedValue": "true",
-                                        "Operator": "=="
-                                    }
-                                ]
-                            }
                         }
                     ]
                 },
