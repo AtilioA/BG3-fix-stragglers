@@ -1,6 +1,8 @@
 ---@class JumpHandler: MetaClass
+---@field public Jumper string -- GUID of the jumper
 ---@field public HandlingJump boolean -- Flag to indicate if a jump is being handled
 ---@field public FirstJumpTime number -- Time of the first jump
+---@field public JumpBoostStatuses string[] -- Statuses table to use for boosting jumps
 ---@field public JumpCheckInterval number -- Interval in seconds for checking distance after jumping
 ---@field public DistanceThreshold number -- Distance threshold for teleporting party members
 ---@field public StopThresholdTime number -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
@@ -16,6 +18,7 @@ function JumpHandler:Init()
     self.Jumper = nil
     self.HandlingJump = false
     self.FirstJumpTime = nil
+    self.JumpBoostStatuses = { "POTION_OF_STRENGTH_HILL_GIANT", "LONG_JUMP" }
 
     -- Define the mapping of MCM settings to JumpHandler attributes
     local settingsMap = {
@@ -26,7 +29,6 @@ function JumpHandler:Init()
         apply_fall_damage = "EnableApplyFallDamage",
         teleporting_method_enabled = "ShouldTeleportCompanions",
         jump_boosting_method_enabled = { "ShouldBoostJump", "enabled" },
-        use_aggressive_method = { "ShouldBoostJump", "aggressive" },
     }
 
     -- Initialize attributes from MCM settings
@@ -146,7 +148,7 @@ function JumpHandler:HandleJumpTimerFinished()
     if self:PartyCrossedDistanceThreshold() then
         self.HandlingJump = false
         if self.ShouldTeleportCompanions then
-            FSDebug(1,
+            FSPrint(1,
                 "JumpHandler:PartyCrossedDistanceThreshold: Distance threshold crossed, teleporting party members...")
                 self:TeleportCompanions()
         end
@@ -158,16 +160,74 @@ function JumpHandler:HandleJumpTimerFinished()
     end)
 end
 
---- TODO: Boosts the jump of the companions
 function JumpHandler:BoostCompanionsJump()
-    FSDebug(1, "JumpHandler:BoostCompanionsJump: Boosting companions jump...")
+    FSPrint(1, "JumpHandler:BoostCompanionsJump: Boosting companions jump...")
 
     local companions = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
-    for i, companion in pairs(companions) do
-        Osi.ApplyStatus(companion, "POTION_OF_STRENGTH_HILL_GIANT", 6, 100, "100")
-        Osi.ApplyStatus(companion, "LONG_JUMP", 6, 100, "100")
+    local statusesApplied = self:ApplyStatusesToCompanions(companions)
+
+    -- Store the applied statuses to remove them later if the companion enters combat
+    self.BoostedCompanions = statusesApplied
+end
+
+function JumpHandler:ApplyStatusesToCompanions(companions)
+    local statusesApplied = {}
+
+    for _, companion in pairs(companions) do
+        statusesApplied[companion] = self:ApplyStatusesToCompanion(companion)
+    end
+
+    return statusesApplied
+end
+
+function JumpHandler:ApplyStatusesToCompanion(companion)
+    local appliedStatuses = {}
+
+    for _, status in ipairs(self.JumpBoostStatuses) do
+        if self:ShouldApplyJumpBoostingStatus(companion, status) then
+            Osi.ApplyStatus(companion, status, 12, 100, "100")
+            table.insert(appliedStatuses, status)
+        end
+    end
+
+    return appliedStatuses
+end
+
+function JumpHandler:ShouldApplyJumpBoostingStatus(companion, status)
+    return Osi.HasActiveStatus(companion, status) == 0 and Osi.IsInCombat(companion) == 0
+end
+
+function JumpHandler:RemoveJumpBoostingStatus(status, companion)
+    if not JumpHandlerInstance.BoostedCompanions then return end
+
+    local companionUUID = VCHelpers.Format:Guid(companion)
+    if not JumpHandlerInstance.BoostedCompanions[companionUUID] then return end
+
+    for i, appliedStatus in ipairs(JumpHandlerInstance.BoostedCompanions[companionUUID]) do
+        if appliedStatus == status then
+            table.remove(JumpHandlerInstance.BoostedCompanions[companionUUID], i)
+            break
+        end
     end
 end
+
+function JumpHandler:RemoveAllJumpBoostingStatusesFromCompanion(companion)
+    local companionUUID = VCHelpers.Format:Guid(companion)
+    if JumpHandlerInstance.BoostedCompanions and JumpHandlerInstance.BoostedCompanions[companionUUID] then
+        for _, status in ipairs(JumpHandlerInstance.BoostedCompanions[companionUUID]) do
+            Osi.RemoveStatus(companionUUID, status)
+        end
+        JumpHandlerInstance.BoostedCompanions[companionUUID] = nil
+    end
+end
+
+Ext.Osiris.RegisterListener("StatusRemoved", 4, "after", function(object, status, causee, applyStoryActionID)
+    JumpHandlerInstance:RemoveJumpBoostingStatus(status, object)
+end)
+
+Ext.Osiris.RegisterListener("EnteredCombat", 2, "after", function(object, combatGuid)
+    JumpHandlerInstance:RemoveAllJumpBoostingStatusesFromCompanion(object)
+end)
 
 --- Checks if the jump event should be handled
 ---@param params VCCastedSpellParams
@@ -220,10 +280,10 @@ function JumpHandler:HandleJump(params)
     end
 
     self.Jumper = CasterGuid
-    FSDebug(1, "JumpHandler:HandleJump: Handling jump...")
+    FSPrint(2, "JumpHandler:HandleJump: Handling jump...")
     self.HandlingJump = true
 
-    if self.ShouldBoostJump.enabled and self.ShouldBoostJump.aggressive then
+    if self.ShouldBoostJump.enabled then
         JumpHandlerInstance:BoostCompanionsJump()
     end
 
