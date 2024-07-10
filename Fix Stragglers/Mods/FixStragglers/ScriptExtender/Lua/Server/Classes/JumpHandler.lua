@@ -60,30 +60,6 @@ function JumpHandler:Init()
     end)
 end
 
--- function JumpHandler:HandleHitpointsChanged(entity, percentage)
---     FSWarn(1, "JumpHandler:HandleHitpointsChanged: Entered function")
---     local entityGuid = VCHelpers.Format:Guid(entity)
---     if entityGuid == self.Jumper then
---         FSWarn(1, "JumpHandler:HandleHitpointsChanged: Jumper's hitpoints changed, checking for fall damage...")
-
---         if self.IgnoreIfJumperTookFallDamage then
---             FSWarn(2, "JumpHandler:HandleHitpointsChanged: Fall damage check enabled, getting linked characters")
---             local otherPartyMembers = VCHelpers.Character:GetCharactersLinkedWith(self.Jumper)
---             for i, companion in ipairs(otherPartyMembers) do
---                 -- FSWarn(3, "JumpHandler:HandleHitpointsChanged: Checking companion " .. companion[1])
---                 if companion ~= self.Jumper then
---                     local damageToJumper = Osi.GetHitpoints(self.Jumper) * percentage / 100
---                     FSWarn(2,
---                         "JumpHandler:HandleHitpointsChanged: Applying " ..
---                         damageToJumper .. " fall damage to " .. VCHelpers.Loca:GetDisplayName(companion))
---                     Osi.ApplyDamage(companion, damageToJumper, self.Jumper)
---                 end
---             end
---         end
---     end
---     FSWarn(1, "JumpHandler:HandleHitpointsChanged: Exiting function")
--- end
-
 function JumpHandler:PartyCrossedDistanceThreshold()
     local hostPosition = { Osi.GetPosition(self.Jumper) }
     local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
@@ -150,7 +126,7 @@ function JumpHandler:HandleJumpTimerFinished()
         if self.ShouldTeleportCompanions then
             FSPrint(1,
                 "JumpHandler:PartyCrossedDistanceThreshold: Distance threshold crossed, teleporting party members...")
-                self:TeleportCompanions()
+            self:TeleportCompanions()
         end
         return
     end
@@ -220,14 +196,6 @@ function JumpHandler:RemoveAllJumpBoostingStatusesFromCompanion(companion)
         JumpHandlerInstance.BoostedCompanions[companionUUID] = nil
     end
 end
-
-Ext.Osiris.RegisterListener("StatusRemoved", 4, "after", function(object, status, causee, applyStoryActionID)
-    JumpHandlerInstance:RemoveJumpBoostingStatus(status, object)
-end)
-
-Ext.Osiris.RegisterListener("EnteredCombat", 2, "after", function(object, combatGuid)
-    JumpHandlerInstance:RemoveAllJumpBoostingStatusesFromCompanion(object)
-end)
 
 --- Checks if the jump event should be handled
 ---@param params VCCastedSpellParams

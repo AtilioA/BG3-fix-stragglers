@@ -11,29 +11,29 @@ function SubscribedEvents:SubscribeToEvents()
         end
     end
 
-    FSPrint(2,
+    FSDebug(2,
         "Subscribing to events with JSON config: " ..
         Ext.Json.Stringify(Mods.BG3MCM.MCMAPI:GetAllModSettings(ModuleUUID), { Beautify = true }))
 
     -- Event subscriptions
     Events.Osiris.CastedSpell:Subscribe(conditionalWrapper(EHandlers.OnCastedSpell))
 
-    -- Ext.Osiris.RegisterListener("HitpointsChanged", 2, "after", conditionalWrapper(EHandlers.OnHitpointsChanged))
-
-    Ext.Osiris.RegisterListener("MoveCapabilityChanged", 2, "after", function(character, isEnabled)
-        _D(character)
-        _D(isEnabled)
+    Ext.Osiris.RegisterListener("StatusRemoved", 4, "after", function(object, status, causee, applyStoryActionID)
+        JumpHandlerInstance:RemoveJumpBoostingStatus(status, object)
     end)
 
-    -- Ext.Osiris.RegisterListener("HitpointsChanged", 2, "after", function(entity, percentage)
-    --     FSDebug(0, "Entity hitpoints changed: " .. entity .. " percentage: " .. percentage)
-    -- end)
-    Ext.Osiris.RegisterListener("ApplyDamage", 4, "after", function(object, damage, damageType, source)
-        FSDebug(0,
-            "Object: " .. object .. " Damage: " .. damage .. " DamageType: " .. damageType .. " Source: " .. source)
+    Ext.Osiris.RegisterListener("EnteredCombat", 2, "after", function(object, combatGuid)
+        JumpHandlerInstance:RemoveAllJumpBoostingStatusesFromCompanion(object)
     end)
 
     Ext.RegisterNetListener("FS_TeleportPartyToYou", EHandlers.OnTPYButtonPress)
+
+    -- Ext.Osiris.RegisterListener("MoveCapabilityChanged", 2, "after", function(character, isEnabled)
+    -- end)
+    -- Ext.Osiris.RegisterListener("ApplyDamage", 4, "after", function(object, damage, damageType, source)
+    --     FSDebug(0,
+    --         "Object: " .. object .. " Damage: " .. damage .. " DamageType: " .. damageType .. " Source: " .. source)
+    -- end)
 end
 
 return SubscribedEvents
