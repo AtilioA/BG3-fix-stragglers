@@ -11,7 +11,10 @@ end
 -- end
 
 function EHandlers.OnTPYButtonPress(call, payload)
-    JumpHandlerInstance:TeleportCompanions()
+    local parsedPayload = Ext.Json.Parse(payload)
+    local skipChecks = parsedPayload.skipChecks
+    FSDebug(1, "Received request to teleport party to player.")
+    JumpHandlerInstance:TeleportCompanions(skipChecks)
 end
 
 return EHandlers
