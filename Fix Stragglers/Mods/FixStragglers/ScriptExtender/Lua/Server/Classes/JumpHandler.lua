@@ -18,7 +18,7 @@ function JumpHandler:Init()
     self.Jumper = nil
     self.HandlingJump = false
     self.FirstJumpTime = nil
-    self.JumpBoostStatuses = { "POTION_OF_STRENGTH_HILL_GIANT", "LONG_JUMP" }
+    self.JumpBoostStatuses = { "FS_JUMPHELPER" }
 
     -- Define the mapping of MCM settings to JumpHandler attributes
     local settingsMap = {
@@ -95,6 +95,7 @@ end
 ---@param skipChecks boolean Skip checks for teleporting party members
 function JumpHandler:TeleportCompanions(skipChecks)
     if not self.Jumper then
+        -- Might not be a good assumption. For multiplayer, we should get the character from the user/peerID. However, I'll leave it like this for now.
         self.Jumper = Osi.GetHostCharacter()
     end
 
@@ -161,7 +162,7 @@ function JumpHandler:ApplyStatusesToCompanion(companion)
 
     for _, status in ipairs(self.JumpBoostStatuses) do
         if self:ShouldApplyJumpBoostingStatus(companion, status) then
-            Osi.ApplyStatus(companion, status, 12, 100, "100")
+            Osi.ApplyStatus(companion, status, 12, 100, companion)
             table.insert(appliedStatuses, status)
         end
     end

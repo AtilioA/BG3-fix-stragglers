@@ -55,7 +55,7 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
         return false
     end
 
-    if self:IsInCombat(member) then
+    if Osi.IsInCombat(member) == 1 then
         return false
     end
 
@@ -71,8 +71,4 @@ function PartyMemberSelector:PassesStrengthCheck(member, characterUUID)
     local memberStrength = VCHelpers.Character:GetAbilityScore(member, "Strength")
 
     return memberStrength >= referenceStrength
-end
-
-function PartyMemberSelector:IsInCombat(member)
-    return Osi.IsInCombat(member) == 1
 end

@@ -34,7 +34,19 @@ function RequireFiles(path, files)
     end
 end
 
-
 function MCMGet(settingID)
     return Mods.BG3MCM.MCMAPI:GetSettingValue(settingID, ModuleUUID)
 end
+
+function LoadStats(modDirectoryName, files)
+    for _, file in ipairs(files) do
+        local fileName = string.format("Public/%s/Stats/Generated/Data/%s.txt", modDirectoryName, file)
+        Ext.Stats.LoadStatsFile("Public/FixStragglers/Stats/Generated/Data/FixStragglers_Status.txt", 1)
+    end
+end
+
+-- Ext.Events.ResetCompleted:Subscribe(function()
+--     Ext.Timer.WaitFor(1000, function()
+--         LoadStats("FixStragglers", { "FixStragglers_Status" })
+--     end)
+-- end)
