@@ -177,7 +177,7 @@
                                 "DescriptionHandle": "hb35a24d15f3244ea9c4d693565f181b7298a"
                             },
                             "Type": "checkbox",
-                            "Default": false,
+                            "Default": true,
                             "Description": "Whether to ignore teleporting party members if jumper took fall damage."
                         },
                         {

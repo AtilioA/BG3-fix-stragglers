@@ -26,7 +26,6 @@
     <content contentuid="h27ad9876fafc44f4b709314e80ca8aa3af5f" version="1">Usar verificação de Força</content>
     <content contentuid="h7b15387a0d1d4aa4825f576c8f8ee5888315" version="1">Nível de debug</content>
     <content contentuid="h9ac20dff50b24753aac11d2a8608b4e1e4bd" version="1">Debug</content>
-    <content contentuid="h1a7a529f42fc4b8a9759d056dbe0b544b54g" version="1">Geral</content>
     <content contentuid="he6a0a3f1742a4404996e9fc19a8a06dbgb75" version="1">Recursos</content>
     <content contentuid="h2e262b9fb6cb48ff81cc051fc7d90bd14165" version="1">Método de teletransporte</content>
     <content contentuid="h074224a2070c4329a36dce867355aa7e5448" version="1">Método de teletransporte - configurações de dano de queda</content>
@@ -36,4 +35,6 @@
     <content contentuid="hc134f0a9573649e281d86a7342621cb39cfa" version="1">Atalhos/botões que permitem que você teletransporte o grupo até você manualmente.</content>
     <content contentuid="hc0a17ac62b694b6b822b1eee46a8993fabfc" version="1">Teletransporta o grupo até você ao pressionar esse atalho.</content>
     <content contentuid="h5c93cdf83dd1475f9af3bd8fe6b8df544573" version="1">Atalho para teletransportar grupo até você</content>
+    <content contentuid="hfd1604bc30924ef0a0355cb1a4838ace5513" version="1">Aumenta temporariamente as capacidades de salto fora do combate. Adicionado por Fix Stragglers.</content>
+    <content contentuid="hb1b36194c4e04695aaa127ff96b316b546c8" version="1">Pezinho</content>
 </contentList>

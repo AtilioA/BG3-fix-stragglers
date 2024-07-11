@@ -36,4 +36,6 @@
     <content contentuid="hc134f0a9573649e281d86a7342621cb39cfa" version="1">Keybindings/buttons that allow you to teleport the party to you manually.</content>
     <content contentuid="hc0a17ac62b694b6b822b1eee46a8993fabfc" version="1">Teleports the party to you by pressing this key combination.</content>
     <content contentuid="h5c93cdf83dd1475f9af3bd8fe6b8df544573" version="1">Teleport party to you shortcut</content>
+    <content contentuid="hfd1604bc30924ef0a0355cb1a4838ace5513" version="1">Temporarily boosts jumping capabilities outside of combat. Added by Fix Stragglers.</content>
+    <content contentuid="hb1b36194c4e04695aaa127ff96b316b546c8" version="1">Boost me up</content>
 </contentList>
