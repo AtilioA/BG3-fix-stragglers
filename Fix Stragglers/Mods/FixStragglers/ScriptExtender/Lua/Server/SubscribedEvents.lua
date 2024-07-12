@@ -26,6 +26,10 @@ function SubscribedEvents:SubscribeToEvents()
         JumpHandlerInstance:RemoveAllJumpBoostingStatusesFromCompanion(object)
     end)
 
+    Ext.Osiris.RegisterListener("GainedControl", 1, "after", function(target)
+        JumpHandlerInstance:RemoveAllJumpBoostingStatusesFromCompanion(target)
+    end)
+
     Ext.RegisterNetListener("FS_TeleportPartyToYou", EHandlers.OnTPYButtonPress)
 
     Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
