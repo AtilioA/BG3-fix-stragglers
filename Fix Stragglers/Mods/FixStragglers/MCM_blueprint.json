@@ -163,10 +163,10 @@
                             },
                             "Description": "Distance threshold in meters for teleporting party members.\nLinked members will be teleported if they are X meters away from a controlled character.\n3m = ~10ft",
                             "Type": "slider_int",
-                            "Default": 30,
+                            "Default": 50,
                             "Options": {
-                                "Min": 10,
-                                "Max": 50
+                                "Min": 20,
+                                "Max": 100
                             },
                             "VisibleIf": {
                                 "Conditions": [
