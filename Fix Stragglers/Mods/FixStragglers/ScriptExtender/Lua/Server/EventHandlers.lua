@@ -54,6 +54,5 @@ function EHandlers.OnTPYButtonPress(call, payload, peerID)
         "Received request to teleport party to player with user ID: " ..
         userID .. " (character: " .. userCharacter .. ")")
 
-    _D(userCharacter)
     return JumpHandlerInstance:TeleportCompanionsToCharacter(userCharacter, skipChecks)
 end
