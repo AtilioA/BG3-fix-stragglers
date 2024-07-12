@@ -6,7 +6,7 @@
             "TabId": "general",
             "TabName": "General",
             "Handles": {
-                "NameHandle": "he6a0a3f1742a4404996e9fc19a8a06dbgb75"
+                "NameHandle": "h1a7a529f42fc4b8a9759d056dbe0b544b54g"
             },
             "Sections": [
                 {
@@ -75,7 +75,7 @@
             "TabId": "features",
             "TabName": "Features",
             "Handles": {
-                "NameHandle": "h9ac20dff50b24753aac11d2a8608b4e1e4bd"
+                "NameHandle": "he6a0a3f1742a4404996e9fc19a8a06dbgb75"
             },
             "Sections": [
                 {
@@ -163,55 +163,6 @@
                     ]
                 },
                 {
-                    "SectionName": "Teleporting method - fall damage settings",
-                    "SectionId": "fall_damage_settings",
-                    "Handles": {
-                        "NameHandle": "h074224a2070c4329a36dce867355aa7e5448"
-                    },
-                    "Settings": [
-                        {
-                            "Id": "ignore_if_fall_damage",
-                            "Name": "Ignore if fall damage",
-                            "Handles": {
-                                "NameHandle": "heee1a7e5bd444eb18d50a0402c95a76bd288",
-                                "DescriptionHandle": "hb35a24d15f3244ea9c4d693565f181b7298a"
-                            },
-                            "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Whether to ignore teleporting party members if jumper took fall damage."
-                        },
-                        {
-                            "Id": "apply_fall_damage",
-                            "Name": "Apply fall damage",
-                            "Handles": {
-                                "NameHandle": "h3c3d6bb4d30e481986eae5200569e301dd31",
-                                "DescriptionHandle": "h5d60d107098540098301438a85c1fc50g654"
-                            },
-                            "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Whether to apply fall damage to party members after teleporting if jumper took fall damage.",
-                            "VisibleIf": {
-                                "Conditions": [
-                                    {
-                                        "SettingId": "ignore_if_fall_damage",
-                                        "ExpectedValue": "true",
-                                        "Operator": "!="
-                                    }
-                                ]
-                            }
-                        }
-                    ],
-                    "VisibleIf": {
-                        "Conditions": [
-                            {
-                                "SettingId": "teleporting_method_enabled",
-                                "ExpectedValue": "true",
-                                "Operator": "=="
-                            }
-                        ]
-                    }
-                },
-                {
                     "SectionId": "jump_boosting_method",
                     "SectionName": "Jump boosting method",
                     "Handles": {
@@ -230,6 +181,55 @@
                             "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
                         }
                     ]
+                },
+                {
+                    "SectionName": "Teleporting method - fall damage settings",
+                    "SectionId": "fall_damage_settings",
+                    "Handles": {
+                        "NameHandle": "h074224a2070c4329a36dce867355aa7e5448"
+                    },
+                    "Settings": [
+                        {
+                            "Id": "ignore_if_fall_damage",
+                            "Name": "Ignore if fall damage",
+                            "Handles": {
+                                "NameHandle": "heee1a7e5bd444eb18d50a0402c95a76bd288",
+                                "DescriptionHandle": "hb35a24d15f3244ea9c4d693565f181b7298a"
+                            },
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to ignore teleporting party members if jumper took fall damage."
+                        }
+                        // {
+                        //     "Id": "apply_fall_damage",
+                        //     "Name": "Apply fall damage",
+                        //     "Handles": {
+                        //         "NameHandle": "h3c3d6bb4d30e481986eae5200569e301dd31",
+                        //         "DescriptionHandle": "h5d60d107098540098301438a85c1fc50g654"
+                        //     },
+                        //     "Type": "checkbox",
+                        //     "Default": true,
+                        //     "Description": "Whether to apply fall damage to party members after teleporting if jumper took fall damage.",
+                        //     "VisibleIf": {
+                        //         "Conditions": [
+                        //             {
+                        //                 "SettingId": "ignore_if_fall_damage",
+                        //                 "ExpectedValue": "true",
+                        //                 "Operator": "!="
+                        //             }
+                        //         ]
+                        //     }
+                        // }
+                    ],
+                    "VisibleIf": {
+                        "Conditions": [
+                            {
+                                "SettingId": "teleporting_method_enabled",
+                                "ExpectedValue": "true",
+                                "Operator": "=="
+                            }
+                        ]
+                    }
                 },
                 {
                     "SectionId": "party_checks",
