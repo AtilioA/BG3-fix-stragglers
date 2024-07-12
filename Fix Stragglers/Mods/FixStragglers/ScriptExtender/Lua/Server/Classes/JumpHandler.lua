@@ -7,7 +7,6 @@
 ---@field public DistanceThreshold number -- Distance threshold for teleporting party members
 ---@field public StopThresholdTime number -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
 ---@field public IgnoreIfJumperTookFallDamage boolean -- Option to enable checking fall damage from jumper
----@field public EnableApplyFallDamage boolean -- Option to enable applying fall damage to teleported characters
 ---@field public ShouldTeleportCompanions boolean -- Option to enable teleporting party members
 ---@field public ShouldBoostJump table -- Options for boosting jump
 JumpHandler = _Class:Create("JumpHandler")
@@ -26,7 +25,6 @@ function JumpHandler:Init()
         distance_threshold = "DistanceThreshold",
         stop_threshold_time = "StopThresholdTime",
         ignore_if_fall_damage = "IgnoreIfJumperTookFallDamage",
-        apply_fall_damage = "EnableApplyFallDamage",
         teleporting_method_enabled = "ShouldTeleportCompanions",
         jump_boosting_method_enabled = { "ShouldBoostJump", "enabled" },
     }
