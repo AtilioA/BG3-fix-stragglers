@@ -28,6 +28,15 @@ function SubscribedEvents:SubscribeToEvents()
 
     Ext.RegisterNetListener("FS_TeleportPartyToYou", EHandlers.OnTPYButtonPress)
 
+    Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
+        -- Timer to check for distant party members, regardless of jump
+        JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
+    end)
+
+    Ext.Events.ResetCompleted:Subscribe(conditionalWrapper(function()
+        JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
+    end))
+
     -- Ext.Osiris.RegisterListener("MoveCapabilityChanged", 2, "after", function(character, isEnabled)
     -- end)
     -- Ext.Osiris.RegisterListener("ApplyDamage", 4, "after", function(object, damage, damageType, source)

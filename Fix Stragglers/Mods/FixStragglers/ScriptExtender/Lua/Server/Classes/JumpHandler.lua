@@ -8,6 +8,8 @@
 ---@field public StopThresholdTime number -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
 ---@field public IgnoreIfJumperTookFallDamage boolean -- Option to enable checking fall damage from jumper
 ---@field public ShouldTeleportCompanions boolean -- Option to enable teleporting party members
+---@field public ShouldTeleportDistantCompanionsNoJump boolean -- Option to enable teleporting distant party members regardless of jump
+---@field public DistanceThresholdNoJump number - Distance threshold for teleporting party members regardless of jump
 ---@field public ShouldBoostJump table -- Options for boosting jump
 JumpHandler = _Class:Create("JumpHandler")
 
@@ -23,9 +25,11 @@ function JumpHandler:Init()
     local settingsMap = {
         jump_check_interval = "JumpCheckInterval",
         distance_threshold = "DistanceThreshold",
+        distance_threshold_no_jump = "DistanceThresholdNoJump",
         stop_threshold_time = "StopThresholdTime",
         ignore_if_fall_damage = "IgnoreIfJumperTookFallDamage",
         teleporting_method_enabled = "ShouldTeleportCompanions",
+        teleporting_method_distance_enabled = "ShouldTeleportDistantCompanionsNoJump",
         jump_boosting_method_enabled = { "ShouldBoostJump", "enabled" },
     }
 
@@ -56,6 +60,54 @@ function JumpHandler:Init()
             FSDebug(1, string.format("Changing JumpHandler '%s' value to '%s'", data.settingId, tostring(data.value)))
         end
     end)
+end
+
+function JumpHandler:CheckAndTeleportDistantPartyMembers()
+    if not self.ShouldTeleportDistantCompanionsNoJump then return end
+    FSDebug(1, "Checking distant party members...")
+
+    local disjointPartySets = VCHelpers.Character:GetDisjointedLinkedCharacterSets()
+
+    for _, set in ipairs(disjointPartySets) do
+        local activeCharacter = self:GetActiveCharacterFromSet(set)
+        if activeCharacter then
+            self:TeleportDistantPartyMembers(activeCharacter)
+        end
+    end
+
+    -- Schedule the next check
+    Ext.Timer.WaitFor(math.random(500, 2000), function()
+        JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
+    end)
+end
+
+function JumpHandler:GetActiveCharacterFromSet(set)
+    for _, character in ipairs(set) do
+        if Osi.IsControlled(character) == 1 then
+            return character
+        end
+    end
+    return nil
+end
+
+function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
+    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(activeCharacter)
+    for _, companion in ipairs(filteredParty) do
+        local companionPosition = { Osi.GetPosition(companion) }
+        local activePosition = { Osi.GetPosition(activeCharacter) }
+        local distance = VCHelpers.Grid:GetDistance(activePosition, companionPosition, true)
+
+        FSPrint(1,
+            "JumpHandler:CheckAndTeleportDistantPartyMembers: Distance to " ..
+            VCHelpers.Loca:GetDisplayName(companion) .. " is " .. string.format("%.2fm", distance))
+        if distance > self.DistanceThresholdNoJump then
+            FSPrint(1,
+                "JumpHandler:CheckAndTeleportDistantPartyMembers: Teleporting " ..
+                VCHelpers.Loca:GetDisplayName(companion) ..
+                " to " .. VCHelpers.Loca:GetDisplayName(activeCharacter))
+            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion })
+        end
+    end
 end
 
 function JumpHandler:PartyCrossedDistanceThreshold()
@@ -91,7 +143,7 @@ end
 --- Teleports the companions to the jumper.
 --- PMSelector will filter out according to user settings and game conditions
 ---@param skipChecks boolean Skip checks for teleporting party members
-function JumpHandler:TeleportCompanions(skipChecks)
+function JumpHandler:TeleportCompanionsToJumper(skipChecks)
     if not self.Jumper then
         -- Might not be a good assumption. For multiplayer, we should get the character from the user/peerID. However, I'll leave it like this for now.
         self.Jumper = Osi.GetHostCharacter()
@@ -103,6 +155,18 @@ function JumpHandler:TeleportCompanions(skipChecks)
     end
 
     VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty)
+end
+
+--- Teleports the companions to the character
+--- PMSelector will filter out according to user settings and game conditions
+---@param character string GUID of the character to teleport to
+function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
+    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
+    if skipChecks then
+        filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
+    end
+
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty)
 end
 
 --- Handles the jump timer finished event
@@ -125,7 +189,7 @@ function JumpHandler:HandleJumpTimerFinished()
         if self.ShouldTeleportCompanions then
             FSPrint(1,
                 "JumpHandler:PartyCrossedDistanceThreshold: Distance threshold crossed, teleporting party members...")
-            self:TeleportCompanions()
+            self:TeleportCompanionsToJumper()
         end
         return
     end
