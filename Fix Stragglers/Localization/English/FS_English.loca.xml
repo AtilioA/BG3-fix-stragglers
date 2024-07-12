@@ -5,12 +5,12 @@
     <content contentuid="h15c7014d00c94bf0b760fe240477401d3a79" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the jumper.&lt;br&gt;3m = ~10ft</content>
     <content contentuid="h36c7b7292c9f4822a37c17a32467fb81e45a" version="1">Interval in seconds between distance checks after jumping.&lt;br&gt;Will periodically check if party members have crossed the distance threshold.&lt;br&gt;This check is repeated every X seconds until the time threshold (set below) is reached.</content>
     <content contentuid="h6b80cdc8f7dd4462bcccd240c01fed49aaff" version="1">Time threshold to stop checking for distance after jumping.&lt;br&gt;After this number of seconds, the mod will stop checking if party members crossed the distance threshold.</content>
-    <content contentuid="h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad" version="1">Keybind to teleport party members to the jumper.</content>
+    <content contentuid="h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad" version="1">Keybind to teleport party members to the current character.</content>
     <content contentuid="hb35a24d15f3244ea9c4d693565f181b7298a" version="1">Whether to ignore teleporting party members if jumper took fall damage.&lt;br&gt;Due to API limitations, it does not check for actual fall damage; this verification is just an approximation.</content>
     <content contentuid="h5d60d107098540098301438a85c1fc50g654" version="1">Whether to apply fall damage to party members after teleporting if jumper took fall damage.</content>
     <content contentuid="h9f020d218ff847b0b1ce71c1b9233b9c8gge" version="1">Whether to buff the jump distance for other characters so that they may try to keep up.</content>
     <content contentuid="h21b8b24dce564043bd4e227f2acebdd23g04" version="1">Whether to buff jump distance for companions right when your character jumps.</content>
-    <content contentuid="he1faf010cea447b19f9dd1ef6ca720176775" version="1">Whether to only handle party members that are grouped or linked to the jumper.</content>
+    <content contentuid="he1faf010cea447b19f9dd1ef6ca720176775" version="1">Whether to only help party members that are grouped or linked to the jumper.</content>
     <content contentuid="hca9298b5534042ac85011f24f6d5b5f485a1" version="1">If enabled, only party members with STR equal or higher than the jumper will be teleported or buffed.</content>
     <content contentuid="h3f0d2ff3cc57431cb0780bb8b27e1e2f7bag" version="1">Toggle the mod on/off.</content>
     <content contentuid="heee1a7e5bd444eb18d50a0402c95a76bd288" version="1">Ignore if fall damage</content>
@@ -38,4 +38,9 @@
     <content contentuid="h5c93cdf83dd1475f9af3bd8fe6b8df544573" version="1">Teleport party to you shortcut</content>
     <content contentuid="hfd1604bc30924ef0a0355cb1a4838ace5513" version="1">Temporarily boosts jumping capabilities outside of combat. Added by Fix Stragglers.</content>
     <content contentuid="hb1b36194c4e04695aaa127ff96b316b546c8" version="1">Boost me up</content>
+    <content contentuid="h8776d0d2b79e41ea8df4d56671ca5f789edf" version="1">These settings allow you to optionally configure the teleporting method.&lt;br&gt;The defaults should work for most cases, feel free to report better values on Nexus.</content>
+    <content contentuid="h03b53d47af774fafbda7196afa8a237e5dbf" version="1">Enable teleporting method (distance-based, without having jumped)</content>
+    <content contentuid="h84d2ab75eabc404eb0ea8b09b6654e5ad7da" version="1">Whether to teleport linked party members if they are too far away from the controlled character.lt;br&gt;Does not depend on jumps.</content>
+    <content contentuid="h09d65cb72c104e17aaf50c7335c0462d356c" version="1">Distance threshold (meters) (without having jumped)</content>
+    <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the controlled character, regardless of jumps.&lt;br&gt;3m = ~10ft</content>
 </contentList>

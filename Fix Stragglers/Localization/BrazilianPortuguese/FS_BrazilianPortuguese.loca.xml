@@ -37,4 +37,9 @@
     <content contentuid="h5c93cdf83dd1475f9af3bd8fe6b8df544573" version="1">Atalho para teletransportar grupo até você</content>
     <content contentuid="hfd1604bc30924ef0a0355cb1a4838ace5513" version="1">Aumenta temporariamente as capacidades de salto fora do combate. Adicionado por Fix Stragglers.</content>
     <content contentuid="hb1b36194c4e04695aaa127ff96b316b546c8" version="1">Pezinho</content>
+    <content contentuid="h8776d0d2b79e41ea8df4d56671ca5f789edf" version="1">Essas configurações permitem que você opcionalmente configure o método de teletransporte.&lt;br&gt;Os padrões devem funcionar na maioria dos casos, sinta-se à vontade para sugerir valores melhores na Nexus.</content>
+    <content contentuid="h03b53d47af774fafbda7196afa8a237e5dbf" version="1">Ativar método de teletransporte baseado em distância</content>
+    <content contentuid="h84d2ab75eabc404eb0ea8b09b6654e5ad7da" version="1">Se deve ou não teletransportar os membros do grupo vinculados se eles estiverem muito distantes do personagem controlado.</content>
+    <content contentuid="h09d65cb72c104e17aaf50c7335c0462d356c" version="1">Limite de distância (metros) (sem ter pulado)</content>
+    <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Limite de distância em metros para teletransportar os membros do grupo.&lt;br&gt;Os membros agrupados serão teletransportados se estiverem a X metros de distância de um personagem controlado, independente de pulos.&lt;br&gt;3m = ~10ft</content>
 </contentList>

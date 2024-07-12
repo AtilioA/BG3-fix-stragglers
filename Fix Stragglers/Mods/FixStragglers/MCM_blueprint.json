@@ -81,10 +81,10 @@
                 {
                     "SectionId": "teleporting_method",
                     "SectionName": "Teleporting method",
-                    "SectionDescription": "These settings allow you to optionally configure the teleporting method.\nThe defaults should work for most cases, feel free to report better values on Nexus.",
+                    "SectionDescription": "These settings allow you to optionally configure the teleporting method.\nThe defaults should work for most cases, feel free to suggest better values on Nexus.",
                     "Handles": {
                         "NameHandle": "h2e262b9fb6cb48ff81cc051fc7d90bd14165",
-                        "DescriptionHandle": "These settings allow you to optionally configure the teleporting method.\nThe defaults should work for most cases, feel free to report better values on Nexus."
+                        "DescriptionHandle": "h8776d0d2b79e41ea8df4d56671ca5f789edf"
                     },
                     "Settings": [
                         {
@@ -109,7 +109,7 @@
                             "Default": 24,
                             "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n3m = ~10ft",
                             "Options": {
-                                "Min": 1,
+                                "Min": 10,
                                 "Max": 50
                             }
                         },
@@ -141,6 +141,41 @@
                             "Options": {
                                 "Min": 1,
                                 "Max": 10
+                            }
+                        },
+                        {
+                            "Id": "teleporting_method_distance_enabled",
+                            "Name": "Enable teleporting method (distance-based)",
+                            "Handles": {
+                                "NameHandle": "h03b53d47af774fafbda7196afa8a237e5dbf",
+                                "DescriptionHandle": "h84d2ab75eabc404eb0ea8b09b6654e5ad7da"
+                            },
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to teleport linked party members if they are too far away from the controlled character.\nDoes not depend on jumps."
+                        },
+                        {
+                            "Id": "distance_threshold_no_jump",
+                            "Name": "Distance threshold (meters) (without having jumped)",
+                            "Handles": {
+                                "NameHandle": "h09d65cb72c104e17aaf50c7335c0462d356c",
+                                "DescriptionHandle": "h695ec44009634bc79d2ce353ddf435655c87"
+                            },
+                            "Description": "Distance threshold in meters for teleporting party members.\nLinked members will be teleported if they are X meters away from a controlled character.\n3m = ~10ft",
+                            "Type": "slider_int",
+                            "Default": 30,
+                            "Options": {
+                                "Min": 10,
+                                "Max": 50
+                            },
+                            "VisibleIf": {
+                                "Conditions": [
+                                    {
+                                        "SettingId": "teleporting_method_distance_enabled",
+                                        "ExpectedValue": "true",
+                                        "Operator": "=="
+                                    }
+                                ]
                             }
                         }
                         // {
