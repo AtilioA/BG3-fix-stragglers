@@ -214,6 +214,26 @@
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
+                        },
+                        {
+                            "Id": "apply_vfx_to_teleported",
+                            "Name": "Apply VFX to teleported characters",
+                            "Handles": {
+                                "NameHandle": "h9156ae140a5c4ad187da86aaf77922f9d45c",
+                                "DescriptionHandle": "h3ab9dd4dbd184839b87a2147b20f87f5dd3b"
+                            },
+                            "Description": "Whether to apply a visual effect to teleported characters.",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "VisibleIf": {
+                                "Conditions": [
+                                    {
+                                        "SettingId": "jump_boosting_method_enabled",
+                                        "ExpectedValue": "true",
+                                        "Operator": "=="
+                                    }
+                                ]
+                            }
                         }
                     ]
                 },
@@ -233,7 +253,7 @@
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Whether to ignore teleporting party members if jumper took fall damage."
+                            "Description": "Whether to ignore teleporting party members if jumper took fall damage.",
                         }
                         // {
                         //     "Id": "apply_fall_damage",
