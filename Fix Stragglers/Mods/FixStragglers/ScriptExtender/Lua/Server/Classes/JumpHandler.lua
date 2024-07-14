@@ -70,7 +70,7 @@ function JumpHandler:CheckAndTeleportDistantPartyMembers()
 
     for _, set in ipairs(disjointPartySets) do
         local activeCharacter = self:GetActiveCharacterFromSet(set)
-        if activeCharacter then
+        if activeCharacter and self:PassesCoreHandlingChecks(activeCharacter) then
             self:TeleportDistantPartyMembers(activeCharacter)
         end
     end
@@ -270,33 +270,53 @@ function JumpHandler:ShouldHandleJump(params)
         return false
     end
 
+    if not self:PassesCoreHandlingChecks(CasterGuid) then
+        return false
+    end
+
+    if not self:PassesJumpRelatedChecks(CasterGuid) then
+        return false
+    end
+
+    return true
+end
+
+--- Miscellaneous checks related to the jump event
+---@param teleportCausee string
+function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
+    if Osi.IsControlled(teleportCausee) ~= 1 then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is not controlled, not handling jump...")
+        return false
+    end
+
+    if Osi.IsInCombat(teleportCausee) ~= 0 then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in combat, not handling jump...")
+        return false
+    end
+
+    if Osi.IsInPartyWith(teleportCausee, Osi.GetHostCharacter()) ~= 1 then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is not in party with host, not handling jump...")
+        return false
+    end
+
+    if VCHelpers.Character:IsCharacterInCamp(teleportCausee) then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in camp, not handling jump...")
+        return false
+    end
+
+    return true
+end
+
+--- Checks specifically related to the jump event
+---@param CasterGuid string
+function JumpHandler:PassesJumpRelatedChecks(CasterGuid)
     if self.HandlingJump then
-        FSDebug(2, "JumpHandler:ShouldHandleJump: A jump is already being handled, not handling jump...")
-        return false
-    end
-
-    if Osi.IsControlled(CasterGuid) ~= 1 then
-        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is not controlled, not handling jump...")
-        return false
-    end
-
-    if Osi.IsInCombat(CasterGuid) ~= 0 then
-        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is in combat, not handling jump...")
-        return false
-    end
-
-    if Osi.IsInPartyWith(CasterGuid, GetHostCharacter()) ~= 1 then
-        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is not in party with host, not handling jump...")
-        return false
-    end
-
-    if VCHelpers.Character:IsCharacterInCamp(CasterGuid) then
-        FSDebug(2, "JumpHandler:ShouldHandleJump: Character is in camp, not handling jump...")
+        FSDebug(2, "JumpHandler:PassesJumpRelatedChecks: A jump is already being handled, not handling jump...")
         return false
     end
 
     if self.IgnoreIfJumperTookFallDamage and self:ProxyCheckFallDamage(CasterGuid) then
-        FSDebug(2, "JumpHandler:ShouldHandleJump: Character potentially took fall damage, not handling jump...")
+        FSDebug(2, "JumpHandler:JumpRelatedChecks: Character potentially took fall damage, not handling jump...")
         return false
     end
 
