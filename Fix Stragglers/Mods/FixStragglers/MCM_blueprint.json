@@ -177,24 +177,43 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "Id": "apply_vfx_to_teleported",
+                            "Name": "Apply VFX to teleported characters",
+                            "Handles": {
+                                "NameHandle": "h9156ae140a5c4ad187da86aaf77922f9d45c",
+                                "DescriptionHandle": "h3ab9dd4dbd184839b87a2147b20f87f5dd3b"
+                            },
+                            "Description": "What visual effect to apply to teleported characters. Pick NONE to disable.",
+                            "Type": "enum",
+                            "Default": "SPEAK_WITH_DEAD_INTERESTING",
+                            "Options": {
+                                "Choices": [
+                                    "NONE",
+                                    "MIST_FORM_VAMPIRE_REMOVE_VFX",
+                                    "PASSIVE_PEACE_BREAKER",
+                                    "SPEAK_WITH_DEAD_INTERESTING",
+                                    "HIRELING_APPEAR"
+                                ]
+                            },
+                            "VisibleIf": {
+                                "LogicalOperator": "or",
+                                "Conditions": [
+                                    {
+                                        "SettingId": "teleporting_method_enabled",
+                                        "ExpectedValue": "true",
+                                        "Operator": "=="
+                                    }
+                                    // Add this back when LogicalOperator is fixed in MCM
+                                    // {
+                                    //     "SettingId": "teleporting_method_distance_enabled",
+                                    //     "ExpectedValue": "true",
+                                    //     "Operator": "=="
+                                    // }
+                                ]
+                            }
                         }
-                        // {
-                        //     "Id": "teleporting_keybind",
-                        //     "Name": "Teleporting keybind",
-                        //     "Handles": {
-                        //         "NameHandle": "Teleporting keybind",
-                        //         "DescriptionHandle": "h78eeb8df88dd4cc0b7b129bbb2f2eafc9bad"
-                        //     },
-                        //     "Type": "keybinding",
-                        //     "Default": {
-                        //         "Modifier": "None",
-                        //         "Key": "T"
-                        //     },
-                        //     "Description": "Keybind to teleport party members to the jumper.",
-                        //     "Options": {
-                        //         "AllowModifiers": true
-                        //     }
-                        // }
                     ]
                 },
                 {
@@ -214,26 +233,6 @@
                             "Type": "checkbox",
                             "Default": false,
                             "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
-                        },
-                        {
-                            "Id": "apply_vfx_to_teleported",
-                            "Name": "Apply VFX to teleported characters",
-                            "Handles": {
-                                "NameHandle": "h9156ae140a5c4ad187da86aaf77922f9d45c",
-                                "DescriptionHandle": "h3ab9dd4dbd184839b87a2147b20f87f5dd3b"
-                            },
-                            "Description": "Whether to apply a visual effect to teleported characters.",
-                            "Type": "checkbox",
-                            "Default": true,
-                            "VisibleIf": {
-                                "Conditions": [
-                                    {
-                                        "SettingId": "jump_boosting_method_enabled",
-                                        "ExpectedValue": "true",
-                                        "Operator": "=="
-                                    }
-                                ]
-                            }
                         }
                     ]
                 },
@@ -253,28 +252,8 @@
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Whether to ignore teleporting party members if jumper took fall damage.",
+                            "Description": "Whether to ignore teleporting party members if jumper took fall damage."
                         }
-                        // {
-                        //     "Id": "apply_fall_damage",
-                        //     "Name": "Apply fall damage",
-                        //     "Handles": {
-                        //         "NameHandle": "h3c3d6bb4d30e481986eae5200569e301dd31",
-                        //         "DescriptionHandle": "h5d60d107098540098301438a85c1fc50g654"
-                        //     },
-                        //     "Type": "checkbox",
-                        //     "Default": true,
-                        //     "Description": "Whether to apply fall damage to party members after teleporting if jumper took fall damage.",
-                        //     "VisibleIf": {
-                        //         "Conditions": [
-                        //             {
-                        //                 "SettingId": "ignore_if_fall_damage",
-                        //                 "ExpectedValue": "true",
-                        //                 "Operator": "!="
-                        //             }
-                        //         ]
-                        //     }
-                        // }
                     ],
                     "VisibleIf": {
                         "Conditions": [

@@ -64,7 +64,7 @@ end
 
 function JumpHandler:CheckAndTeleportDistantPartyMembers()
     if not self.ShouldTeleportDistantCompanionsNoJump then return end
-    FSDebug(1, "Checking distant party members...")
+    FSDebug(2, "Checking distant party members...")
 
     local disjointPartySets = VCHelpers.Character:GetDisjointedLinkedCharacterSets()
 
@@ -97,7 +97,7 @@ function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
         local activePosition = { Osi.GetPosition(activeCharacter) }
         local distance = VCHelpers.Grid:GetDistance(activePosition, companionPosition, true)
 
-        FSPrint(1,
+        FSPrint(2,
             "JumpHandler:CheckAndTeleportDistantPartyMembers: Distance to " ..
             VCHelpers.Loca:GetDisplayName(companion) .. " is " .. string.format("%.2fm", distance))
         if distance > self.DistanceThresholdNoJump then
@@ -105,7 +105,7 @@ function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
                 "JumpHandler:CheckAndTeleportDistantPartyMembers: Teleporting " ..
                 VCHelpers.Loca:GetDisplayName(companion) ..
                 " to " .. VCHelpers.Loca:GetDisplayName(activeCharacter))
-            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion })
+            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion }, MCMGet("apply_vfx_to_teleported"))
         end
     end
 end
@@ -154,7 +154,7 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(self.Jumper)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty)
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, MCMGet("apply_vfx_to_teleported"))
 end
 
 --- Teleports the companions to the character
@@ -166,7 +166,7 @@ function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty)
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, MCMGet("apply_vfx_to_teleported"))
 end
 
 --- Handles the jump timer finished event
@@ -285,22 +285,22 @@ end
 ---@param teleportCausee string
 function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
     if Osi.IsControlled(teleportCausee) ~= 1 then
-        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is not controlled, not handling jump...")
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is not controlled, not passing core check...")
         return false
     end
 
     if Osi.IsInCombat(teleportCausee) ~= 0 then
-        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in combat, not handling jump...")
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in combat, not passing core check...")
         return false
     end
 
     if Osi.IsInPartyWith(teleportCausee, Osi.GetHostCharacter()) ~= 1 then
-        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is not in party with host, not handling jump...")
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is not in party with host, not passing core check...")
         return false
     end
 
     if VCHelpers.Character:IsCharacterInCamp(teleportCausee) then
-        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in camp, not handling jump...")
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in camp, not passing core check...")
         return false
     end
 
