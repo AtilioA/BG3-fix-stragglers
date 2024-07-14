@@ -302,7 +302,7 @@
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Whether to only handle party members that are grouped or linked to the jumper."
+                            "Description": "Whether to only help party members that are grouped or linked to the controlled character."
                         },
                         {
                             "Id": "enable_str_check",
@@ -313,7 +313,7 @@
                             },
                             "Type": "checkbox",
                             "Default": false,
-                            "Description": "If enabled, only party members with STR equal or higher than the jumper will be teleported or buffed."
+                            "Description": "If enabled, only party members with STR equal or higher than the jumper/controlled character will be helped."
                         }
                     ]
                 }
