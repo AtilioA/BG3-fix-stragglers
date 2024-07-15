@@ -105,7 +105,7 @@ function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
                 "JumpHandler:CheckAndTeleportDistantPartyMembers: Teleporting " ..
                 VCHelpers.Loca:GetDisplayName(companion) ..
                 " to " .. VCHelpers.Loca:GetDisplayName(activeCharacter))
-            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion }, MCMGet("apply_vfx_to_teleported"))
+            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion })
         end
     end
 end
@@ -154,7 +154,7 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(self.Jumper)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, MCMGet("apply_vfx_to_teleported"))
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty)
 end
 
 --- Teleports the companions to the character
@@ -166,7 +166,7 @@ function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, MCMGet("apply_vfx_to_teleported"))
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty)
 end
 
 --- Handles the jump timer finished event

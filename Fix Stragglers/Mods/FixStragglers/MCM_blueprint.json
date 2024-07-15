@@ -177,43 +177,43 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "Id": "apply_vfx_to_teleported",
-                            "Name": "Apply VFX to teleported characters",
-                            "Handles": {
-                                "NameHandle": "h9156ae140a5c4ad187da86aaf77922f9d45c",
-                                "DescriptionHandle": "h3ab9dd4dbd184839b87a2147b20f87f5dd3b"
-                            },
-                            "Description": "What visual effect to apply to teleported characters. Pick NONE to disable.",
-                            "Type": "enum",
-                            "Default": "SPEAK_WITH_DEAD_INTERESTING",
-                            "Options": {
-                                "Choices": [
-                                    "NONE",
-                                    "MIST_FORM_VAMPIRE_REMOVE_VFX",
-                                    "PASSIVE_PEACE_BREAKER",
-                                    "SPEAK_WITH_DEAD_INTERESTING",
-                                    "HIRELING_APPEAR"
-                                ]
-                            },
-                            "VisibleIf": {
-                                "LogicalOperator": "or",
-                                "Conditions": [
-                                    {
-                                        "SettingId": "teleporting_method_enabled",
-                                        "ExpectedValue": "true",
-                                        "Operator": "=="
-                                    }
-                                    // Add this back when LogicalOperator is fixed in MCM
-                                    // {
-                                    //     "SettingId": "teleporting_method_distance_enabled",
-                                    //     "ExpectedValue": "true",
-                                    //     "Operator": "=="
-                                    // }
-                                ]
-                            }
                         }
+                        // {
+                        //     "Id": "apply_vfx_to_teleported",
+                        //     "Name": "Apply VFX to teleported characters",
+                        //     "Handles": {
+                        //         "NameHandle": "h9156ae140a5c4ad187da86aaf77922f9d45c",
+                        //         "DescriptionHandle": "h3ab9dd4dbd184839b87a2147b20f87f5dd3b"
+                        //     },
+                        //     "Description": "What visual effect to apply to teleported characters. Pick NONE to disable.",
+                        //     "Type": "enum",
+                        //     "Default": "SPEAK_WITH_DEAD_INTERESTING",
+                        //     "Options": {
+                        //         "Choices": [
+                        //             "NONE",
+                        //             "MIST_FORM_VAMPIRE_REMOVE_VFX",
+                        //             "PASSIVE_PEACE_BREAKER",
+                        //             "SPEAK_WITH_DEAD_INTERESTING",
+                        //             "HIRELING_APPEAR"
+                        //         ]
+                        //     },
+                        //     "VisibleIf": {
+                        //         "LogicalOperator": "or",
+                        //         "Conditions": [
+                        //             {
+                        //                 "SettingId": "teleporting_method_enabled",
+                        //                 "ExpectedValue": "true",
+                        //                 "Operator": "=="
+                        //             }
+                        //             // Add this back when LogicalOperator is fixed in MCM
+                        //             // {
+                        //             //     "SettingId": "teleporting_method_distance_enabled",
+                        //             //     "ExpectedValue": "true",
+                        //             //     "Operator": "=="
+                        //             // }
+                        //         ]
+                        //     }
+                        // }
                     ]
                 },
                 {
