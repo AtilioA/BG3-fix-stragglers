@@ -30,7 +30,7 @@ function SubscribedEvents:SubscribeToEvents()
         JumpHandlerInstance:RemoveAllJumpBoostingStatusesFromCompanion(target)
     end)
 
-    Ext.RegisterNetListener("FS_TeleportPartyToYou", EHandlers.OnTPYButtonPress)
+    Ext.RegisterNetListener("FS_TeleportPartyToYou", conditionalWrapper(EHandlers.OnTPYButtonPress))
 
     Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
         -- Timer to check for distant party members, regardless of jump

@@ -63,7 +63,10 @@ function JumpHandler:Init()
 end
 
 function JumpHandler:CheckAndTeleportDistantPartyMembers()
+    if not MCMGet("mod_enabled") then return end
+
     if not self.ShouldTeleportDistantCompanionsNoJump then return end
+    
     FSDebug(2, "Checking distant party members...")
 
     local disjointPartySets = VCHelpers.Character:GetDisjointedLinkedCharacterSets()
@@ -77,7 +80,9 @@ function JumpHandler:CheckAndTeleportDistantPartyMembers()
 
     -- Schedule the next check
     Ext.Timer.WaitFor(math.random(500, 2000), function()
-        JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
+        if MCMGet("mod_enabled") then
+            JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
+        end
     end)
 end
 
