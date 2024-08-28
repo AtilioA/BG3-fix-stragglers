@@ -59,6 +59,10 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
         return false
     end
 
+    if VCHelpers.Lootable:IsLootable(member) then
+        return false
+    end
+
     return true
 end
 
