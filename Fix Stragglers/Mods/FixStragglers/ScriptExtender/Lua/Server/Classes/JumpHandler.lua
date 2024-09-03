@@ -44,20 +44,20 @@ function JumpHandler:Init()
     end
 
     -- Update the JumpHandler instance values when the MCM settings are changed
-    Ext.RegisterNetListener("MCM_Saved_Setting", function(call, payload)
-        local data = Ext.Json.Parse(payload)
-        if not data or data.modGUID ~= ModuleUUID or not data.settingId then
+    Ext.ModEvents.BG3MCM['MCM_Setting_Saved']:Subscribe(function(payload)
+        if not payload or payload.modUUID ~= ModuleUUID or not payload.settingId then
             return
         end
 
-        local attribute = settingsMap[data.settingId]
+        local attribute = settingsMap[payload.settingId]
         if attribute then
             if type(attribute) == "table" then
-                self[attribute[1]][attribute[2]] = data.value
+                self[attribute[1]][attribute[2]] = payload.value
             else
-                self[attribute] = data.value
+                self[attribute] = payload.value
             end
-            FSDebug(1, string.format("Changing JumpHandler '%s' value to '%s'", data.settingId, tostring(data.value)))
+            FSDebug(1,
+                string.format("Changing JumpHandler '%s' value to '%s'", payload.settingId, tostring(payload.value)))
         end
     end)
 end
@@ -66,7 +66,7 @@ function JumpHandler:CheckAndTeleportDistantPartyMembers()
     if not MCMGet("mod_enabled") then return end
 
     if not self.ShouldTeleportDistantCompanionsNoJump then return end
-    
+
     FSDebug(2, "Checking distant party members...")
 
     local disjointPartySets = VCHelpers.Character:GetDisjointedLinkedCharacterSets()

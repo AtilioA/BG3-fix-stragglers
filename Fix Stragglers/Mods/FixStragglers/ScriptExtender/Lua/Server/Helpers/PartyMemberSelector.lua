@@ -8,14 +8,13 @@ function PartyMemberSelector:Init()
     self.OnlyLinkedCharacters = MCMGet("only_linked_characters")
 
     -- Update the PartyMemberSelector instance values when the MCM settings are changed
-    Ext.RegisterNetListener("MCM_Saved_Setting", function(call, payload)
-        local data = Ext.Json.Parse(payload)
-        if not data or data.modGUID ~= ModuleUUID then return end
+    Ext.ModEvents.BG3MCM['MCM_Setting_Saved']:Subscribe(function(payload)
+        if not payload or payload.modUUID ~= ModuleUUID or not payload.settingId then return end
 
-        if data.settingId == "enable_str_check" then
-            self.UseStrengthCheck = data.value
-        elseif data.settingId == "only_linked_characters" then
-            self.OnlyLinkedCharacters = data.value
+        if payload.settingId == "enable_str_check" then
+            self.UseStrengthCheck = payload.value
+        elseif payload.settingId == "only_linked_characters" then
+            self.OnlyLinkedCharacters = payload.value
         end
     end)
 end
