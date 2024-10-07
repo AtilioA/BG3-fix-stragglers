@@ -45,4 +45,6 @@
     <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the controlled character, regardless of jumps.&lt;br&gt;3m = ~10ft</content>
     <content contentuid="h9156ae140a5c4ad187da86aaf77922f9d45c" version="1">Apply VFX to teleported characters</content>
     <content contentuid="h3ab9dd4dbd184839b87a2147b20f87f5dd3b" version="1">What visual effect to apply when teleporting characters. Pick NONE to disable.</content>
+    <content contentuid="hb85ee769341e4af2983216899cc74e1d436f" version="1">Whether to ignore summons when teleporting/helping party members.</content>
+    <content contentuid="h4b8dbe31e25743fcbf6bee6e8cec438d57f6" version="1">Ignore summons</content>
 </contentList>

@@ -44,4 +44,6 @@
     <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Limite de distância em metros para teletransportar os membros do grupo.&lt;br&gt;Os membros agrupados serão teletransportados se estiverem a X metros de distância de um personagem controlado, independente de pulos.&lt;br&gt;3m = ~10ft</content>
     <content contentuid="h9156ae140a5c4ad187da86aaf77922f9d45c" version="1">Aplicar efeito visual em personagens teletransportados</content>
     <content contentuid="h3ab9dd4dbd184839b87a2147b20f87f5dd3b" version="1">Qual efeito visual aplicar ao teletransportar personagens. Selecione NONE para desativar.</content>
+    <content contentuid="hb85ee769341e4af2983216899cc74e1d436f" version="1">Se deve ou não ignorar invocações ao teletransportar/ajudar membros do grupo.</content>
+    <content contentuid="h4b8dbe31e25743fcbf6bee6e8cec438d57f6" version="1">Ignorar invocações</content>
 </contentList>

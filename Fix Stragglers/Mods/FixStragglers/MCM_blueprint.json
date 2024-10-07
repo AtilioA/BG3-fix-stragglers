@@ -231,7 +231,7 @@
                                 "DescriptionHandle": "h9f020d218ff847b0b1ce71c1b9233b9c8gge"
                             },
                             "Type": "checkbox",
-                            "Default": false,
+                            "Default": true,
                             "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
                         }
                     ]
@@ -282,6 +282,17 @@
                             "Type": "checkbox",
                             "Default": true,
                             "Description": "Whether to only help party members that are grouped or linked to the controlled character."
+                        },
+                        {
+                            "Id": "ignore_summons",
+                            "Name": "Ignore summons",
+                            "Handles": {
+                                "NameHandle": "h4b8dbe31e25743fcbf6bee6e8cec438d57f6",
+                                "DescriptionHandle": "hb85ee769341e4af2983216899cc74e1d436f"
+                            },
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to ignore summons when teleporting/helping party members."
                         },
                         {
                             "Id": "enable_str_check",
