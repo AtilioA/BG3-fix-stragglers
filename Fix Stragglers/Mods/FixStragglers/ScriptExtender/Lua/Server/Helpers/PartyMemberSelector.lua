@@ -19,6 +19,9 @@ function PartyMemberSelector:Init()
     end)
 end
 
+--- Filters the party members for the given characterUUID.
+--- @param characterUUID Guid
+--- @return table finalMembers The filtered list of party members
 function PartyMemberSelector:FilterPartyMembersFor(characterUUID)
     local otherPartyMembers = VCHelpers.Party:GetOtherPartyMembers(characterUUID)
     local partyWithoutCharacter = {}
@@ -45,26 +48,43 @@ function PartyMemberSelector:FilterPartyMembersFor(characterUUID)
     return finalMembers
 end
 
+--- Checks if the given member should be included in the list of party members to consider.
+--- @param member Guid
+--- @param characterUUID Guid
+--- @return boolean
 function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
     if member == characterUUID then
+        FSDebug(2, "Excluding member: " .. member .. " because it is the same as characterUUID: " .. characterUUID)
         return false
     end
 
     if not self:PassesStrengthCheck(member, characterUUID) then
+        FSDebug(2, "Excluding member: " .. member .. " due to failed strength check.")
         return false
     end
 
     if Osi.IsInCombat(member) == 1 then
+        FSDebug(2, "Excluding member: " .. member .. " because they are in combat.")
         return false
     end
 
     if VCHelpers.Lootable:IsLootable(member) then
+        FSDebug(2, "Excluding member: " .. member .. " because they are lootable.")
+        return false
+    end
+
+    if Osi.IsDead(member) == 1 then
+        FSDebug(2, "Excluding member: " .. member .. " because they are dead.")
         return false
     end
 
     return true
 end
 
+--- Checks if the given member passes the strength check.
+--- @param member Guid
+--- @param characterUUID Guid
+--- @return boolean
 function PartyMemberSelector:PassesStrengthCheck(member, characterUUID)
     if not self.UseStrengthCheck then
         return true

@@ -294,6 +294,16 @@ function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
         return false
     end
 
+    if Osi.IsSummon(teleportCausee) == 1 then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is a summon, not passing core check...")
+        return false
+    end
+
+    if Osi.IsDead(teleportCausee) == 1 or VCHelpers.Lootable:IsLootable(teleportCausee) then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is dead, not passing core check...")
+        return false
+    end
+
     if Osi.IsInCombat(teleportCausee) ~= 0 then
         FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in combat, not passing core check...")
         return false
