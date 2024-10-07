@@ -3,7 +3,7 @@ SubscribedEvents = {}
 function SubscribedEvents:SubscribeToEvents()
     local function conditionalWrapper(handler)
         return function(...)
-            if MCMGet("mod_enabled") then
+            if MCM.Get("mod_enabled") then
                 handler(...)
             else
                 FSPrint(1, "Event handling is disabled.")
