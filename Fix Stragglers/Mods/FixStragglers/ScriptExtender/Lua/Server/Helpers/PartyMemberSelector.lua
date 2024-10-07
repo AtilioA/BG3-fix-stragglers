@@ -54,7 +54,14 @@ end
 --- @return boolean
 function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
     if member == characterUUID then
-        FSDebug(2, "Excluding member: " .. member .. " because it is the same as characterUUID: " .. characterUUID)
+        FSDebug(2,
+            "Excluding member: " ..
+            VCHelpers.Loca:GetDisplayName(member) .. " because it is the same as characterUUID: " .. characterUUID)
+        return false
+    end
+
+    if Osi.IsControlled(member) ~= 0 then
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are controlled.")
         return false
     end
 
