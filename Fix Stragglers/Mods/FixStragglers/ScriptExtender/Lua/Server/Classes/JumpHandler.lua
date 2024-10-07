@@ -37,9 +37,9 @@ function JumpHandler:Init()
     for mcmSetting, attribute in pairs(settingsMap) do
         if type(attribute) == "table" then
             if not self[attribute[1]] then self[attribute[1]] = {} end
-            self[attribute[1]][attribute[2]] = MCMGet(mcmSetting)
+            self[attribute[1]][attribute[2]] = MCM.Get(mcmSetting)
         else
-            self[attribute] = MCMGet(mcmSetting)
+            self[attribute] = MCM.Get(mcmSetting)
         end
     end
 
@@ -63,7 +63,7 @@ function JumpHandler:Init()
 end
 
 function JumpHandler:CheckAndTeleportDistantPartyMembers()
-    if not MCMGet("mod_enabled") then return end
+    if not MCM.Get("mod_enabled") then return end
 
     if not self.ShouldTeleportDistantCompanionsNoJump then return end
 
@@ -80,9 +80,13 @@ function JumpHandler:CheckAndTeleportDistantPartyMembers()
 
     -- Schedule the next check
     Ext.Timer.WaitFor(math.random(500, 2000), function()
-        if MCMGet("mod_enabled") then
+        if not MCM.Get("mod_enabled") then return end
+
+        xpcall(function()
             JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
-        end
+        end, function(err)
+            FSDebug(0, "Error in CheckAndTeleportDistantPartyMembers: " .. err)
+        end)
     end)
 end
 
