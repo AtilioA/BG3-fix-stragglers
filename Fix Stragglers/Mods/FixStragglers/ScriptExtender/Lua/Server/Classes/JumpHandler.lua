@@ -303,7 +303,7 @@ function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
         return false
     end
 
-    if Osi.IsDead(teleportCausee) == 1 or VCHelpers.Lootable:IsLootable(teleportCausee) then
+    if Osi.IsDead(teleportCausee) == 1 then
         FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is dead, not passing core check...")
         return false
     end

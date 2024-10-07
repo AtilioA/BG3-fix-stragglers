@@ -75,10 +75,10 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
         return false
     end
 
-    if VCHelpers.Lootable:IsLootable(member) then
-        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are lootable.")
-        return false
-    end
+    -- if VCHelpers.Lootable:IsLootable(member) then
+    --     FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are lootable.")
+    --     return false
+    -- end
 
     if Osi.IsDead(member) == 1 then
         FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are dead.")
