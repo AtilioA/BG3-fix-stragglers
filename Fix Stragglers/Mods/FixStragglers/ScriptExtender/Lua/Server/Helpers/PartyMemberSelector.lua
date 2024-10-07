@@ -74,7 +74,14 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
     end
 
     if Osi.IsDead(member) == 1 then
-        FSDebug(2, "Excluding member: " .. member .. " because they are dead.")
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are dead.")
+        return false
+    end
+
+    if Osi.GetHitpoints(member) <= 0 then
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they have 0 hitpoints.")
+        return false
+    end
         return false
     end
 

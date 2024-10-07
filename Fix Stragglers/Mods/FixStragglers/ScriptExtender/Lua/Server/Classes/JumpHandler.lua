@@ -304,6 +304,11 @@ function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
         return false
     end
 
+    if Osi.GetHitpoints(teleportCausee) <= 0 then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character has 0 hitpoints, not passing core check...")
+        return false
+    end
+
     if Osi.IsInCombat(teleportCausee) ~= 0 then
         FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in combat, not passing core check...")
         return false
