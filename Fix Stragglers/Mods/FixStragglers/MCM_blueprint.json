@@ -107,7 +107,7 @@
                             },
                             "Type": "slider_int",
                             "Default": 24,
-                            "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n3m = ~10ft",
+                            "Description": "Distance threshold in meters for teleporting party members.\nMembers will be teleported if they are X meters away from the jumper.\n10m = ~32ft",
                             "Options": {
                                 "Min": 10,
                                 "Max": 50
@@ -142,97 +142,6 @@
                                 "Min": 1,
                                 "Max": 10
                             }
-                        },
-                        {
-                            "Id": "teleporting_method_distance_enabled",
-                            "Name": "Enable teleporting method (distance-based)",
-                            "Handles": {
-                                "NameHandle": "h03b53d47af774fafbda7196afa8a237e5dbf",
-                                "DescriptionHandle": "h84d2ab75eabc404eb0ea8b09b6654e5ad7da"
-                            },
-                            "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Whether to teleport linked party members if they are too far away from the controlled character.\nDoes not depend on jumps."
-                        },
-                        {
-                            "Id": "distance_threshold_no_jump",
-                            "Name": "Distance threshold (meters) (without having jumped)",
-                            "Handles": {
-                                "NameHandle": "h09d65cb72c104e17aaf50c7335c0462d356c",
-                                "DescriptionHandle": "h695ec44009634bc79d2ce353ddf435655c87"
-                            },
-                            "Description": "Distance threshold in meters for teleporting party members.\nLinked members will be teleported if they are X meters away from a controlled character.\n3m = ~10ft",
-                            "Type": "slider_int",
-                            "Default": 50,
-                            "Options": {
-                                "Min": 20,
-                                "Max": 100
-                            },
-                            "VisibleIf": {
-                                "Conditions": [
-                                    {
-                                        "SettingId": "teleporting_method_distance_enabled",
-                                        "ExpectedValue": "true",
-                                        "Operator": "=="
-                                    }
-                                ]
-                            }
-                        }
-                        // {
-                        //     "Id": "apply_vfx_to_teleported",
-                        //     "Name": "Apply VFX to teleported characters",
-                        //     "Handles": {
-                        //         "NameHandle": "h9156ae140a5c4ad187da86aaf77922f9d45c",
-                        //         "DescriptionHandle": "h3ab9dd4dbd184839b87a2147b20f87f5dd3b"
-                        //     },
-                        //     "Description": "What visual effect to apply to teleported characters. Pick NONE to disable.",
-                        //     "Type": "enum",
-                        //     "Default": "SPEAK_WITH_DEAD_INTERESTING",
-                        //     "Options": {
-                        //         "Choices": [
-                        //             "NONE",
-                        //             "MIST_FORM_VAMPIRE_REMOVE_VFX",
-                        //             "PASSIVE_PEACE_BREAKER",
-                        //             "SPEAK_WITH_DEAD_INTERESTING",
-                        //             "HIRELING_APPEAR"
-                        //         ]
-                        //     },
-                        //     "VisibleIf": {
-                        //         "LogicalOperator": "or",
-                        //         "Conditions": [
-                        //             {
-                        //                 "SettingId": "teleporting_method_enabled",
-                        //                 "ExpectedValue": "true",
-                        //                 "Operator": "=="
-                        //             }
-                        //             // Add this back when LogicalOperator is fixed in MCM
-                        //             // {
-                        //             //     "SettingId": "teleporting_method_distance_enabled",
-                        //             //     "ExpectedValue": "true",
-                        //             //     "Operator": "=="
-                        //             // }
-                        //         ]
-                        //     }
-                        // }
-                    ]
-                },
-                {
-                    "SectionId": "jump_boosting_method",
-                    "SectionName": "Jump boosting method",
-                    "Handles": {
-                        "NameHandle": "hb415bd57dc814792baa387f29368c489042b"
-                    },
-                    "Settings": [
-                        {
-                            "Id": "jump_boosting_method_enabled",
-                            "Name": "Enable jump boosting method",
-                            "Handles": {
-                                "NameHandle": "hdc92f20b1c4a4a3794ee84a4c06654a41g03",
-                                "DescriptionHandle": "h9f020d218ff847b0b1ce71c1b9233b9c8gge"
-                            },
-                            "Type": "checkbox",
-                            "Default": true,
-                            "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
                         }
                     ]
                 },
@@ -265,6 +174,77 @@
                         ]
                     }
                 },
+                {
+                    "SectionId": "jump_boosting_method",
+                    "SectionName": "Jump boosting method",
+                    "Handles": {
+                        "NameHandle": "hb415bd57dc814792baa387f29368c489042b"
+                    },
+                    "Settings": [
+                        {
+                            "Id": "jump_boosting_method_enabled",
+                            "Name": "Enable jump boosting method",
+                            "Handles": {
+                                "NameHandle": "hdc92f20b1c4a4a3794ee84a4c06654a41g03",
+                                "DescriptionHandle": "h9f020d218ff847b0b1ce71c1b9233b9c8gge"
+                            },
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to buff the jump distance for other characters so that they may try to keep up."
+                        }
+                    ]
+                },
+                {
+                    "SectionId": "distance-based_teleporting_method",
+                    "SectionName": "Distance-based teleporting method",
+                    "SectionDescription": "These settings allow you to teleport party members if they are too far away from the controlled character, regardless of jumps.",
+                    "Settings": [
+                        {
+                            "Id": "teleporting_method_distance_enabled",
+                            "Name": "Enable teleporting method (distance-based)",
+                            "Handles": {
+                                "NameHandle": "h03b53d47af774fafbda7196afa8a237e5dbf",
+                                "DescriptionHandle": "h84d2ab75eabc404eb0ea8b09b6654e5ad7da"
+                            },
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to teleport linked party members if they are too far away from the controlled character.\nDoes not depend on jumps."
+                        },
+                        {
+                            "Id": "distance_threshold_no_jump",
+                            "Name": "Distance threshold (meters) (without having jumped)",
+                            "Handles": {
+                                "NameHandle": "h09d65cb72c104e17aaf50c7335c0462d356c",
+                                "DescriptionHandle": "h695ec44009634bc79d2ce353ddf435655c87"
+                            },
+                            "Description": "Distance threshold in meters for teleporting party members.\nLinked members will be teleported if they are X meters away from a controlled character.\n20m = ~65ft",
+                            "Type": "slider_int",
+                            "Default": 50,
+                            "Options": {
+                                "Min": 20,
+                                "Max": 100
+                            },
+                            "VisibleIf": {
+                                "Conditions": [
+                                    {
+                                        "SettingId": "teleporting_method_distance_enabled",
+                                        "ExpectedValue": "true",
+                                        "Operator": "=="
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "TabId": "party_checks",
+            "TabName": "Party checks",
+            "Handles": {
+                "NameHandle": "Party checks"
+            },
+            "Sections": [
                 {
                     "SectionId": "party_checks",
                     "SectionName": "Party checks",

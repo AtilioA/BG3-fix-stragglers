@@ -41,7 +41,7 @@
     <content contentuid="h03b53d47af774fafbda7196afa8a237e5dbf" version="1">Ativar método de teletransporte baseado em distância</content>
     <content contentuid="h84d2ab75eabc404eb0ea8b09b6654e5ad7da" version="1">Se deve ou não teletransportar os membros do grupo vinculados se eles estiverem muito distantes do personagem controlado.</content>
     <content contentuid="h09d65cb72c104e17aaf50c7335c0462d356c" version="1">Limite de distância (metros) (sem ter pulado)</content>
-    <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Limite de distância em metros para teletransportar os membros do grupo.&lt;br&gt;Os membros agrupados serão teletransportados se estiverem a X metros de distância de um personagem controlado, independente de pulos.&lt;br&gt;3m = ~10ft</content>
+    <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Limite de distância em metros para teletransportar os membros do grupo.&lt;br&gt;Os membros agrupados serão teletransportados se estiverem a X metros de distância de um personagem controlado, independente de pulos.</content>
     <content contentuid="h9156ae140a5c4ad187da86aaf77922f9d45c" version="1">Aplicar efeito visual em personagens teletransportados</content>
     <content contentuid="h3ab9dd4dbd184839b87a2147b20f87f5dd3b" version="1">Qual efeito visual aplicar ao teletransportar personagens. Selecione NONE para desativar.</content>
     <content contentuid="hb85ee769341e4af2983216899cc74e1d436f" version="1">Se deve ou não ignorar invocações ao teletransportar/ajudar membros do grupo.</content>

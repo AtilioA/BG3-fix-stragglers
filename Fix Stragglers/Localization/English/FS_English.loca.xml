@@ -42,7 +42,7 @@
     <content contentuid="h03b53d47af774fafbda7196afa8a237e5dbf" version="1">Enable teleporting method (distance-based, without having jumped)</content>
     <content contentuid="h84d2ab75eabc404eb0ea8b09b6654e5ad7da" version="1">Whether to teleport linked party members if they are too far away from the controlled character.&lt;br&gt;Does not depend on jumps.</content>
     <content contentuid="h09d65cb72c104e17aaf50c7335c0462d356c" version="1">Distance threshold (meters) (without having jumped)</content>
-    <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the controlled character, regardless of jumps.&lt;br&gt;3m = ~10ft</content>
+    <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the controlled character, regardless of jumps.&lt;br&gt;10m = ~32ft</content>
     <content contentuid="h9156ae140a5c4ad187da86aaf77922f9d45c" version="1">Apply VFX to teleported characters</content>
     <content contentuid="h3ab9dd4dbd184839b87a2147b20f87f5dd3b" version="1">What visual effect to apply when teleporting characters. Pick NONE to disable.</content>
     <content contentuid="hb85ee769341e4af2983216899cc74e1d436f" version="1">Whether to ignore summons when teleporting/helping party members.</content>
