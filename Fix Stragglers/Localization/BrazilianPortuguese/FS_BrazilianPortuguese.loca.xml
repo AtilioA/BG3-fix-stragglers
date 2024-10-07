@@ -46,4 +46,8 @@
     <content contentuid="h3ab9dd4dbd184839b87a2147b20f87f5dd3b" version="1">Qual efeito visual aplicar ao teletransportar personagens. Selecione NONE para desativar.</content>
     <content contentuid="hb85ee769341e4af2983216899cc74e1d436f" version="1">Se deve ou não ignorar invocações ao teletransportar/ajudar membros do grupo.</content>
     <content contentuid="h4b8dbe31e25743fcbf6bee6e8cec438d57f6" version="1">Ignorar invocações</content>
+    <content contentuid="hf3a29641e4e14792b1329ecdca098f49ga4c" version="1">Teletransportar grupo até você AGORA</content>
+    <content contentuid="h6f2ca1b3df5748cc975fed9f10db594702bb" version="1">Teletransportar grupo até você AGORA (Forçar)</content>
+    <content contentuid="h4d1b593c4aa64583b70c99dd82383edaa23e" version="1">Teletransportar os membros do grupo para a localização do seu personagem, independentemente das suas configurações (combate, etc).</content>
+    <content contentuid="hf8e993f425d44a5d97ebdd1efaebb37c6e57" version="1">Teletransportar os membros do grupo para a localização do seu personagem de acordo com suas configurações.</content>
 </contentList>

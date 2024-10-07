@@ -1,14 +1,14 @@
 Mods.BG3MCM.IMGUIAPI:InsertModMenuTab(ModuleUUID, "General", function(tabHeader)
-    local TPYButton = tabHeader:AddButton("Teleport party to you NOW")
+    local TPYButton = tabHeader:AddButton(Ext.Loca.GetTranslatedString("hf3a29641e4e14792b1329ecdca098f49ga4c"))
     local TPYDescription = tabHeader:AddText(
-    "Teleport party members to the location of your character according to your settings.")
+        Ext.Loca.GetTranslatedString("hf8e993f425d44a5d97ebdd1efaebb37c6e57"))
     TPYButton.OnClick = function()
         Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = false }))
     end
 
-    local TPYButtonForce = tabHeader:AddButton("Teleport party to you NOW (Force)")
+    local TPYButtonForce = tabHeader:AddButton(Ext.Loca.GetTranslatedString("h6f2ca1b3df5748cc975fed9f10db594702bb"))
     local TPYForceDescription = tabHeader:AddText(
-        "Teleport party members to the location of your character regardless of your settings (combat, etc).")
+        Ext.Loca.GetTranslatedString("h4d1b593c4aa64583b70c99dd82383edaa23e"))
     TPYButtonForce.OnClick = function()
         Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = true }))
     end
