@@ -4,8 +4,8 @@
 PartyMemberSelector = _Class:Create("PartyMemberSelector")
 
 function PartyMemberSelector:Init()
-    self.UseStrengthCheck = MCMGet("enable_str_check")
-    self.OnlyLinkedCharacters = MCMGet("only_linked_characters")
+    self.UseStrengthCheck = MCM.Get("enable_str_check")
+    self.OnlyLinkedCharacters = MCM.Get("only_linked_characters")
 
     -- Update the PartyMemberSelector instance values when the MCM settings are changed
     Ext.ModEvents.BG3MCM['MCM_Setting_Saved']:Subscribe(function(payload)
@@ -66,17 +66,17 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
     end
 
     if not self:PassesStrengthCheck(member, characterUUID) then
-        FSDebug(2, "Excluding member: " .. member .. " due to failed strength check.")
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " due to failed strength check.")
         return false
     end
 
     if Osi.IsInCombat(member) == 1 then
-        FSDebug(2, "Excluding member: " .. member .. " because they are in combat.")
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are in combat.")
         return false
     end
 
     if VCHelpers.Lootable:IsLootable(member) then
-        FSDebug(2, "Excluding member: " .. member .. " because they are lootable.")
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are lootable.")
         return false
     end
 
@@ -89,6 +89,9 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
         FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they have 0 hitpoints.")
         return false
     end
+
+    if MCM.Get("ignore_summons") and Osi.IsSummon(member) == 1 then
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are a summon AND 'ignore summons' is enabled.")
         return false
     end
 
