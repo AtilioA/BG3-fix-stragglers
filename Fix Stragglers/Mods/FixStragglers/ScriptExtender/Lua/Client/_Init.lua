@@ -14,8 +14,6 @@ Mods.BG3MCM.IMGUIAPI:InsertModMenuTab(ModuleUUID, "General", function(tabHeader)
     end
 end)
 
-Ext.Events.KeyInput:Subscribe(function(e)
-    if KeybindingManager:IsKeybindingPressed(e, MCM.Get("key_teleport_party_to_you")) then
-        Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = false }))
-    end
+MCM.SetKeybindingCallback('key_teleport_party_to_you', function()
+    Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = false }))
 end)

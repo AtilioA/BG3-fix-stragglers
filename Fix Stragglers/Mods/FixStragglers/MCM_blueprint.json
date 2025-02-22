@@ -56,10 +56,15 @@
                         {
                             "Id": "key_teleport_party_to_you",
                             "Name": "Teleport party to you shortcut",
-                            "Type": "keybinding",
+                            "Type": "keybinding_v2",
                             "Default": {
-                                "Modifier": "LShift",
-                                "ScanCode": "T"
+                                "Keyboard": {
+                                    "Key": "T",
+                                    "ModifierKeys": ["LShift"]
+                                },
+                                "Controller": {
+                                    "Buttons": []
+                                }
                             },
                             "Description": "Teleports the party to you by pressing this key combination.",
                             "Handles": {
