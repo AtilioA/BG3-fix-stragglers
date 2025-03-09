@@ -61,9 +61,6 @@
                                 "Keyboard": {
                                     "Key": "T",
                                     "ModifierKeys": ["LShift"]
-                                },
-                                "Controller": {
-                                    "Buttons": []
                                 }
                             },
                             "Description": "Teleports the party to you by pressing this key combination.",
