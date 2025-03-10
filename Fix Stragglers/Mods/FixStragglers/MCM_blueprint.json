@@ -60,7 +60,9 @@
                             "Default": {
                                 "Keyboard": {
                                     "Key": "T",
-                                    "ModifierKeys": ["LShift"]
+                                    "ModifierKeys": [
+                                        "LShift"
+                                    ]
                                 }
                             },
                             "Description": "Teleports the party to you by pressing this key combination.",
@@ -173,7 +175,8 @@
                                 "ExpectedValue": "true",
                                 "Operator": "=="
                             }
-                        ]
+                        ],
+                        "LogicalOperator": "or"
                     }
                 },
                 {
