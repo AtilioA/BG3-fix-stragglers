@@ -51,4 +51,6 @@
     <content contentuid="h6f2ca1b3df5748cc975fed9f10db594702bb" version="1">Teleport party to you NOW (Force)</content>
     <content contentuid="h4d1b593c4aa64583b70c99dd82383edaa23e" version="1">Teleport party members to the location of your character regardless of your settings (combat, etc).</content>
     <content contentuid="hf8e993f425d44a5d97ebdd1efaebb37c6e57" version="1">Teleport party members to the location of your character according to your settings.</content>
+    <content contentuid="had6129d543474a07953e38eb5716e54456a3" version="1">These settings allow you to teleport party members if they are too far away from the controlled character, regardless of jumps.</content>
+    <content contentuid="hd6ffcbfc7a92433889c8d7ae61d0e90475g2" version="1">Distance-based teleporting method</content>
 </contentList>

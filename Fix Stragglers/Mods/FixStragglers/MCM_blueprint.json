@@ -239,7 +239,11 @@
                                 ]
                             }
                         }
-                    ]
+                    ],
+                    "Handles": {
+                        "NameHandle": "hd6ffcbfc7a92433889c8d7ae61d0e90475g2",
+                        "DescriptionHandle": "had6129d543474a07953e38eb5716e54456a3"
+                    }
                 }
             ]
         },
