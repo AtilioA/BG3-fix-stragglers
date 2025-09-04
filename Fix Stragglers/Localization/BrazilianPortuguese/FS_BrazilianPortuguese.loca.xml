@@ -52,4 +52,8 @@
     <content contentuid="hf8e993f425d44a5d97ebdd1efaebb37c6e57" version="1">Teletransportar os membros do grupo para a localização do seu personagem de acordo com suas configurações.</content>
     <content contentuid="had6129d543474a07953e38eb5716e54456a3" version="1">Estas configurações permitem que você teletransporte os membros do grupo se estiverem muito distantes do personagem controlado, independentemente de pulos.</content>
     <content contentuid="hd6ffcbfc7a92433889c8d7ae61d0e90475g2" version="1">Método de teletransporte baseado em distância</content>
+    <content contentuid="hf7a3b7a29e1941a4b599fe36e3c5ffb06c48" version="1">Ignorar personagens restritos</content>
+    <content contentuid="hc4b5138b3d4d47c78f37d52a0a88c367673e" version="1">Ignorar membros do grupo que estão em um estado 'restrito': em zona de perigo ou afetados por restrições de movimento/viagem rápida (presos, à noite, etc.).</content>
+    <content contentuid="h541faa82e54a4e1c80ed24ccbaef61c72399" version="1">Ignorar em diálogo</content>
+    <content contentuid="hcaded10a91be4e5fa440dba60753ad0f179a" version="1">Ignorar membros do grupo em diálogo.</content>
 </contentList>

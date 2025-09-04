@@ -284,6 +284,28 @@
                             "Description": "Whether to ignore summons when teleporting/helping party members."
                         },
                         {
+                            "Id": "ignore_restricted_characters",
+                            "Name": "Ignore restricted characters",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Ignore party members that are in a 'restricted' state: in Danger Zone or affected by movement/fast travel restrictions (arrested, camp night, etc).",
+                            "Handles": {
+                                "NameHandle": "hf7a3b7a29e1941a4b599fe36e3c5ffb06c48",
+                                "DescriptionHandle": "hc4b5138b3d4d47c78f37d52a0a88c367673e"
+                            }
+                        },
+                        {
+                            "Id": "ignore_on_dialogue",
+                            "Name": "Ignore on dialogue",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Ignore party members that are in dialogue.",
+                            "Handles": {
+                                "NameHandle": "h541faa82e54a4e1c80ed24ccbaef61c72399",
+                                "DescriptionHandle": "hcaded10a91be4e5fa440dba60753ad0f179a"
+                            }
+                        },
+                        {
                             "Id": "enable_str_check",
                             "Name": "Use Strength check",
                             "Handles": {
@@ -292,7 +314,7 @@
                             },
                             "Type": "checkbox",
                             "Default": false,
-                            "Description": "If enabled, only party members with STR equal or higher than the jumper/controlled character will be helped."
+                            "Description": "If enabled, only party members with STR equal or higher than the jumper/controlled character will be helped/teleported."
                         }
                     ]
                 }

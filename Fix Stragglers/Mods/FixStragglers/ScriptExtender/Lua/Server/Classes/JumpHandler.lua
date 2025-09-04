@@ -328,6 +328,16 @@ function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
         return false
     end
 
+    if PartyMemberSelector.IgnoreOnDialogue and PartyMemberSelector:IsInDialogue(teleportCausee) then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in dialogue, not passing core check...")
+        return false
+    end
+
+    if PartyMemberSelector.IgnoreRestrictedCharacters and PartyMemberSelector:IsRestricted(teleportCausee) then
+        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in a restricted area/state, not passing core check...")
+        return false
+    end
+
     return true
 end
 

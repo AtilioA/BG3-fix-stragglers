@@ -1,11 +1,15 @@
 ---@class PartyMemberSelector: MetaClass
 ---@field public UseStrengthCheck boolean
 ---@field public OnlyLinkedCharacters boolean
+---@field public IgnoreRestrictedCharacters boolean
+---@field public IgnoreOnDialogue boolean
 PartyMemberSelector = _Class:Create("PartyMemberSelector")
 
 function PartyMemberSelector:Init()
     self.UseStrengthCheck = MCM.Get("enable_str_check")
     self.OnlyLinkedCharacters = MCM.Get("only_linked_characters")
+    self.IgnoreRestrictedCharacters = MCM.Get("ignore_restricted_characters")
+    self.IgnoreOnDialogue = MCM.Get("ignore_on_dialogue")
 
     -- Update the PartyMemberSelector instance values when the MCM settings are changed
     Ext.ModEvents.BG3MCM['MCM_Setting_Saved']:Subscribe(function(payload)
@@ -15,6 +19,10 @@ function PartyMemberSelector:Init()
             self.UseStrengthCheck = payload.value
         elseif payload.settingId == "only_linked_characters" then
             self.OnlyLinkedCharacters = payload.value
+        elseif payload.settingId == "ignore_restricted_characters" then
+            self.IgnoreRestrictedCharacters = payload.value
+        elseif payload.settingId == "ignore_on_dialogue" then
+            self.IgnoreOnDialogue = payload.value
         end
     end)
 end
@@ -95,6 +103,16 @@ function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
         return false
     end
 
+    if self.IgnoreOnDialogue and self:IsInDialogue(member) then
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " because they are in dialogue.")
+        return false
+    end
+
+    if self.IgnoreRestrictedCharacters and self:IsRestricted(member) then
+        FSDebug(2, "Excluding member: " .. VCHelpers.Loca:GetDisplayName(member) .. " due to being in a restricted area/state (danger zone or fast-travel/movement block).")
+        return false
+    end
+
     return true
 end
 
@@ -111,4 +129,32 @@ function PartyMemberSelector:PassesStrengthCheck(member, characterUUID)
     local memberStrength = VCHelpers.Character:GetAbilityScore(member, "Strength")
 
     return memberStrength >= referenceStrength
+end
+
+--- Checks if a character is in a restricted state (danger zone/fast travel block).
+---@param characterUUID Guid
+---@return boolean
+function PartyMemberSelector:IsRestricted(characterUUID)
+    if not characterUUID then return false end
+    return next(Osi.DB_InDangerZone:Get(characterUUID, nil)) ~= nil
+        or next(Osi.DB_FastTravelBlock_BlockedZone_StatusSet:Get(characterUUID)) ~= nil
+        or next(Osi.DB_FastTravelBlock_CantMove_StatusSet:Get(characterUUID)) ~= nil
+        or next(Osi.DB_FastTravelBlock_Arrested_StatusSet:Get(characterUUID)) ~= nil
+        or next(Osi.DB_FastTravelBlock_CampNightMode_StatusSet:Get(characterUUID)) ~= nil
+        or next(Osi.DB_FastTravelBlock_FugitiveInPrison_StatusSet:Get(characterUUID, nil)) ~= nil
+end
+
+--- Checks if a character is in dialogue, safely.
+---@param characterUUID Guid
+---@return boolean
+function PartyMemberSelector:IsInDialogue(characterUUID)
+    if not characterUUID then return false end
+    local entity = Ext.Entity.Get(characterUUID)
+    local success, inDialog = xpcall(function()
+        return entity and entity.ServerCharacter and entity.ServerCharacter.Flags.InDialog
+    end, function(err)
+        FSDebug(1, "Error checking dialogue: " .. tostring(err))
+        return false
+    end)
+    return success and inDialog == true
 end
