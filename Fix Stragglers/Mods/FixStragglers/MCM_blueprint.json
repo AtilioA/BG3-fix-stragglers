@@ -177,6 +177,17 @@
                                 "Min": 1,
                                 "Max": 10
                             }
+                        },
+                        {
+                            "Id": "avoid_dangerous_terrain",
+                            "Name": "Avoid dangerous terrain/heights",
+                            "Handles": {
+                                "NameHandle": "h62c6c1302eef4bffabf7482009bba14240c9",
+                                "DescriptionHandle": "hdcea8784451e4f64938235d480ee4de2267e"
+                            },
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Description": "Whether to avoid dangerous terrain/heights when teleporting party members."
                         }
                     ]
                 },

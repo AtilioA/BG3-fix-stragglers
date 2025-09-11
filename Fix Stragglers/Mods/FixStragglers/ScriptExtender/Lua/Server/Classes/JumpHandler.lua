@@ -79,13 +79,13 @@ function JumpHandler:CheckAndTeleportDistantPartyMembers()
     end
 
     -- Schedule the next check
-    Ext.Timer.WaitFor(math.random(500, 2000), function()
+    Ext.Timer.WaitFor(math.random(600, 2000), function()
         if not MCM.Get("mod_enabled") then return end
 
         xpcall(function()
             JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
         end, function(err)
-            FSDebug(0, "Error in CheckAndTeleportDistantPartyMembers: " .. err)
+            FSWarn(1, "Error in CheckAndTeleportDistantPartyMembers: " .. err)
         end)
     end)
 end
@@ -100,6 +100,8 @@ function JumpHandler:GetActiveCharacterFromSet(set)
 end
 
 function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
+    if not self:IsValidTeleportSource(activeCharacter) then return end
+
     local filteredParty = PartyMemberSelector:FilterPartyMembersFor(activeCharacter)
     for _, companion in ipairs(filteredParty) do
         local companionPosition = { Osi.GetPosition(companion) }
@@ -149,6 +151,30 @@ function JumpHandler:CheckStopThresholdTime()
     return false
 end
 
+--- Checks if a character is currently in a valid position to be a teleport source/target
+---@param character string
+---@return boolean
+function JumpHandler:IsValidTeleportSource(character)
+    if not MCM.Get("avoid_dangerous_terrain") then return true end
+    if not character then return false end
+
+    local pos = { Osi.GetPosition(character) }
+    local hasPosition = pos ~= nil and pos[1] ~= nil and pos[2] ~= nil and pos[3] ~= nil
+    if not hasPosition then return false end
+
+    local validPos = {Osi.FindValidPosition(pos[1], pos[2], pos[3], 0, character, 1)}
+    local hasValid = validPos ~= nil and validPos[1] ~= nil and validPos[2] ~= nil and validPos[3] ~= nil
+
+    local distanceToValid = VCHelpers.Grid:GetDistance(pos, validPos, true)
+
+    if not hasValid or distanceToValid > 1 then
+        FSDebug(1, "JumpHandler:IsValidTeleportSource: Invalid position for " .. VCHelpers.Loca:GetDisplayName(character))
+        return false
+    end
+
+    return true
+end
+
 --- Teleports the companions to the jumper.
 --- PMSelector will filter out according to user settings and game conditions
 ---@param skipChecks boolean Skip checks for teleporting party members
@@ -157,6 +183,8 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
         -- Might not be a good assumption. For multiplayer, we should get the character from the user/peerID. However, I'll leave it like this for now.
         self.Jumper = Osi.GetHostCharacter()
     end
+
+    if not self:IsValidTeleportSource(self.Jumper) then return end
 
     local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
     if skipChecks then
@@ -170,6 +198,8 @@ end
 --- PMSelector will filter out according to user settings and game conditions
 ---@param character string GUID of the character to teleport to
 function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
+    if not self:IsValidTeleportSource(character) then return end
+
     local filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
     if skipChecks then
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
@@ -189,6 +219,15 @@ function JumpHandler:HandleJumpTimerFinished()
     -- Check if self.StopThresholdTime has passed since the first jump
     if self:CheckStopThresholdTime() then
         self.HandlingJump = false
+        return
+    end
+
+    -- Ensure the jumper is currently in a valid position before proceeding
+    if not self:IsValidTeleportSource(self.Jumper) then
+        FSDebug(2, "JumpHandler:HandleJumpTimerFinished: Jumper in invalid position; delaying re-check...")
+        Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
+            JumpHandlerInstance:HandleJumpTimerFinished()
+        end)
         return
     end
 

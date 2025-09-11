@@ -59,4 +59,6 @@
     <content contentuid="hcaded10a91be4e5fa440dba60753ad0f179a" version="1">Ignore party members that are in dialogue.</content>
     <content contentuid="h4786fd5ea1d84f1694597e3ac77201dcg050" version="1">Always force teleport the party to you, even if some restrictions would normally block it.</content>
     <content contentuid="hb9d4feb6abbc4649bd3055f75ad509f0f05g" version="1">Always force teleport</content>
+    <content contentuid="hdcea8784451e4f64938235d480ee4de2267e" version="1">Whether to avoid dangerous terrain/heights when teleporting party members.</content>
+    <content contentuid="h62c6c1302eef4bffabf7482009bba14240c9" version="1">Avoid dangerous terrain/heights</content>
 </contentList>
