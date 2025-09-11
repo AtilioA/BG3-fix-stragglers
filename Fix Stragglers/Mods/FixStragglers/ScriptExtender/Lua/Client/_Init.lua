@@ -1,19 +1,29 @@
-Mods.BG3MCM.IMGUIAPI:InsertModMenuTab(ModuleUUID, "General", function(tabHeader)
-    local TPYButton = tabHeader:AddButton(Ext.Loca.GetTranslatedString("hf3a29641e4e14792b1329ecdca098f49ga4c"))
-    local TPYDescription = tabHeader:AddText(
-        Ext.Loca.GetTranslatedString("hf8e993f425d44a5d97ebdd1efaebb37c6e57"))
-    TPYButton.OnClick = function()
-        Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = false }))
+---@param skipChecks boolean
+---@return nil
+local function FS_SendTeleportPartyToYou(skipChecks)
+    if not Ext or not Ext.Net or not Ext.Json then
+        FSError("Ext, Ext.Net or Ext.Json are not available.")
+        return
     end
 
-    local TPYButtonForce = tabHeader:AddButton(Ext.Loca.GetTranslatedString("h6f2ca1b3df5748cc975fed9f10db594702bb"))
-    local TPYForceDescription = tabHeader:AddText(
-        Ext.Loca.GetTranslatedString("h4d1b593c4aa64583b70c99dd82383edaa23e"))
-    TPYButtonForce.OnClick = function()
-        Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = true }))
-    end
-end)
+    if type(skipChecks) ~= "boolean" then skipChecks = false end
 
-MCM.SetKeybindingCallback('key_teleport_party_to_you', function()
-    Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = false }))
-end)
+    Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = skipChecks }))
+end
+
+-- Register event button callbacks
+if MCM.EventButton and MCM.EventButton.RegisterCallback then
+    MCM.EventButton.RegisterCallback("btn_teleport_party_to_you", function()
+        FS_SendTeleportPartyToYou(false)
+    end)
+    MCM.EventButton.RegisterCallback("btn_teleport_party_to_you_force", function()
+        FS_SendTeleportPartyToYou(true)
+    end)
+end
+
+-- Register keybinding callback
+if MCM.Keybinding and MCM.Keybinding.SetCallback then
+    MCM.Keybinding.SetCallback('key_teleport_party_to_you', function()
+        FS_SendTeleportPartyToYou(false)
+    end)
+end

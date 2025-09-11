@@ -84,7 +84,7 @@
                         },
                         {
                             "Id": "btn_teleport_party_to_you",
-                            "Name": "Teleport party to you",
+                            "Name": "Teleport party to you NOW",
                             "Type": "event_button",
                             "Description": "Teleports the party to you.",
                             "Handles": {
@@ -94,7 +94,7 @@
                         },
                         {
                             "Id": "btn_teleport_party_to_you_force",
-                            "Name": "Teleport party to you (force)",
+                            "Name": "Teleport party to you NOW (force)",
                             "Type": "event_button",
                             "Description": "Teleports the party to you even if some restrictions would normally block it.",
                             "Handles": {
