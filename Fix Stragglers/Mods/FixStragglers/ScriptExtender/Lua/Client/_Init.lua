@@ -6,7 +6,9 @@ local function FS_SendTeleportPartyToYou(skipChecks)
         return
     end
 
-    if type(skipChecks) ~= "boolean" then skipChecks = false end
+    if type(skipChecks) ~= "boolean" then
+        skipChecks = MCM.Get("always_force_teleport")
+    end
 
     Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = skipChecks }))
 end
@@ -24,6 +26,6 @@ end
 -- Register keybinding callback
 if MCM.Keybinding and MCM.Keybinding.SetCallback then
     MCM.Keybinding.SetCallback('key_teleport_party_to_you', function()
-        FS_SendTeleportPartyToYou(false)
+        FS_SendTeleportPartyToYou(nil)
     end)
 end
