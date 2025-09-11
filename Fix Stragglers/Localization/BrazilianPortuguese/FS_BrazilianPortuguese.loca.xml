@@ -56,4 +56,6 @@
     <content contentuid="hc4b5138b3d4d47c78f37d52a0a88c367673e" version="1">Ignorar membros do grupo que estão em um estado 'restrito': em zona de perigo ou afetados por restrições de movimento/viagem rápida (presos, à noite, etc.).</content>
     <content contentuid="h541faa82e54a4e1c80ed24ccbaef61c72399" version="1">Ignorar em diálogo</content>
     <content contentuid="hcaded10a91be4e5fa440dba60753ad0f179a" version="1">Ignorar membros do grupo em diálogo.</content>
+    <content contentuid="hb9d4feb6abbc4649bd3055f75ad509f0f05g" version="1">Sempre forçar teleporte</content>
+    <content contentuid="h4786fd5ea1d84f1694597e3ac77201dcg050" version="1">Sempre forçar teletransportar o grupo até você, mesmo se algumas restrições normalmente bloqueariam isso.</content>
 </contentList>
