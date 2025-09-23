@@ -162,13 +162,15 @@ function JumpHandler:IsValidTeleportSource(character)
     local hasPosition = pos ~= nil and pos[1] ~= nil and pos[2] ~= nil and pos[3] ~= nil
     if not hasPosition then return false end
 
-    local validPos = {Osi.FindValidPosition(pos[1], pos[2], pos[3], 0, character, 1)}
-    local hasValid = validPos ~= nil and validPos[1] ~= nil and validPos[2] ~= nil and validPos[3] ~= nil
+    local validPos = { Osi.FindValidPosition(pos[1], pos[2], pos[3], 0, character, 1) }
+    local hasValidPos = validPos ~= nil and validPos[1] ~= nil and validPos[2] ~= nil and validPos[3] ~= nil
+
+    if not hasValidPos then return false end
 
     local distanceToValid = VCHelpers.Grid:GetDistance(pos, validPos, true)
 
-    if not hasValid or distanceToValid > 1 then
-        FSDebug(1, "JumpHandler:IsValidTeleportSource: Invalid position for " .. VCHelpers.Loca:GetDisplayName(character))
+    if distanceToValid > 1 then
+        FSDebug(1, "JumpHandler:IsValidTeleportSource: Bad position for " .. VCHelpers.Loca:GetDisplayName(character))
         return false
     end
 
