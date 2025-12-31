@@ -60,6 +60,22 @@ function JumpHandler:Init()
                 string.format("Changing JumpHandler '%s' value to '%s'", payload.settingId, tostring(payload.value)))
         end
     end)
+
+    PartyMemberSelector:Init()
+end
+
+--- Generates the settings table for VCHelpers
+---@param forceBypass boolean|nil If true, bypasses all checks
+---@return table
+function JumpHandler:GetTeleportSettings(forceBypass)
+    if forceBypass or MCM.Get("always_force_teleport") then
+        return { IgnoreDialogue = false, IgnoreRestricted = false }
+    end
+
+    return {
+        IgnoreDialogue = PartyMemberSelector.IgnoreOnDialogue,
+        IgnoreRestricted = PartyMemberSelector.IgnoreRestrictedCharacters
+    }
 end
 
 function JumpHandler:CheckAndTeleportDistantPartyMembers()
@@ -117,7 +133,7 @@ function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
                 VCHelpers.Loca:GetDisplayName(companion) ..
                 " to " .. VCHelpers.Loca:GetDisplayName(activeCharacter))
             VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion },
-                nil, MCM.Get("always_force_teleport"))
+                nil, self:GetTeleportSettings())
         end
     end
 end
@@ -194,14 +210,18 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(self.Jumper)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, nil, skipChecks)
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, nil,
+        self:GetTeleportSettings(skipChecks))
 end
 
 --- Teleports the companions to the character
 --- PMSelector will filter out according to user settings and game conditions
 ---@param character string GUID of the character to teleport to
 function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
-    if not self:IsValidTeleportSource(character) then return end
+    if not self:IsValidTeleportSource(character) then
+        FSDebug(2, "JumpHandler:TeleportCompanionsToCharacter: Invalid teleport source: " .. character)
+        return
+    end
 
     local filteredParty = {}
     if not skipChecks then
@@ -210,7 +230,8 @@ function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, nil, skipChecks)
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, nil,
+        self:GetTeleportSettings(skipChecks))
 end
 
 --- Handles the jump timer finished event

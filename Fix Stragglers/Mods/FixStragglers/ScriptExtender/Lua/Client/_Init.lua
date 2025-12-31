@@ -6,9 +6,7 @@ local function FS_SendTeleportPartyToYou(skipChecks)
         return
     end
 
-    if type(skipChecks) ~= "boolean" then
-        skipChecks = MCM.Get("always_force_teleport")
-    end
+    skipChecks = skipChecks or MCM.Get("always_force_teleport")
 
     Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = skipChecks }))
 end
