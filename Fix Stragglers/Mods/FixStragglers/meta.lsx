@@ -12,7 +12,7 @@
                             <attribute id="Name" type="FixedString" value="Volition Cabinet" />
                             <attribute id="UUID" type="FixedString"
                                 value="f97b43be-7398-4ea5-8fe2-be7eb3d4b5ca" />
-                            <attribute id="Version64" type="int64" value="37858388662550528" />
+                            <attribute id="Version64" type="int64" value="38139861491777536" />
                         </node>
                         <node id="ModuleShortDesc">
                             <attribute id="Folder" type="LSWString" value="BG3MCM" />
@@ -20,7 +20,7 @@
                             <attribute id="Name" type="FixedString" value="Mod Configuration Menu" />
                             <attribute id="UUID" type="FixedString"
                                 value="755a8a72-407f-4f0d-9a33-274ac0f0b53d" />
-                            <attribute id="Version64" type="int64" value="41095346599755776" />
+                            <attribute id="Version64" type="int64" value="41376825871433728" />
                         </node>
                     </children>
                 </node>
