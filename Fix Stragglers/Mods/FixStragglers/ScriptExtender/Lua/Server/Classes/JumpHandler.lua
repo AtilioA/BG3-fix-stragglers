@@ -116,7 +116,8 @@ function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
                 "JumpHandler:CheckAndTeleportDistantPartyMembers: Teleporting " ..
                 VCHelpers.Loca:GetDisplayName(companion) ..
                 " to " .. VCHelpers.Loca:GetDisplayName(activeCharacter))
-            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion })
+            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion },
+                nil, MCM.Get("always_force_teleport"))
         end
     end
 end
@@ -193,7 +194,7 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(self.Jumper)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty)
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, nil, skipChecks)
 end
 
 --- Teleports the companions to the character
@@ -202,12 +203,14 @@ end
 function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
     if not self:IsValidTeleportSource(character) then return end
 
-    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
-    if skipChecks then
+    local filteredParty = {}
+    if not skipChecks then
+        filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
+    else
         filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty)
+    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, nil, skipChecks)
 end
 
 --- Handles the jump timer finished event
@@ -375,7 +378,8 @@ function JumpHandler:PassesCoreHandlingChecks(teleportCausee)
     end
 
     if PartyMemberSelector.IgnoreRestrictedCharacters and PartyMemberSelector:IsRestricted(teleportCausee) then
-        FSDebug(2, "JumpHandler:PassesCoreHandlingChecks: Character is in a restricted area/state, not passing core check...")
+        FSDebug(2,
+            "JumpHandler:PassesCoreHandlingChecks: Character is in a restricted area/state, not passing core check...")
         return false
     end
 
