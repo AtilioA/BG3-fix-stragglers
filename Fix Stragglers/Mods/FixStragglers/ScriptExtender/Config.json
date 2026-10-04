@@ -1,5 +1,5 @@
 {
-    "RequiredVersion": 26,
+    "RequiredVersion": 32,
     "ModTable": "FixStragglers",
     "FeatureFlags": [
         "Lua"
