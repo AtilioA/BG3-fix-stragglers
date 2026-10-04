@@ -7,10 +7,12 @@
 ---@field public DistanceThreshold number -- Distance threshold for teleporting party members
 ---@field public StopThresholdTime number -- Time threshold to stop if more than X seconds passed without crossing the distance threshold
 ---@field public IgnoreIfJumperTookFallDamage boolean -- Option to enable checking fall damage from jumper
----@field public ShouldTeleportCompanions boolean -- Option to enable teleporting party members
----@field public ShouldTeleportDistantCompanionsNoJump boolean -- Option to enable teleporting distant party members regardless of jump
 ---@field public DistanceThresholdNoJump number - Distance threshold for teleporting party members regardless of jump
 ---@field public ShouldBoostJump table -- Options for boosting jump
+---@field public JumpCheckTimer TimerId|nil
+---@field public JumpCheckGeneration integer
+---@field public DistanceCheckTimer TimerId|nil
+---@field public DistanceCheckGeneration integer
 JumpHandler = _Class:Create("JumpHandler")
 
 local PartyMemberSelector = PartyMemberSelector:New()
@@ -20,6 +22,8 @@ function JumpHandler:Init()
     self.HandlingJump = false
     self.FirstJumpTime = nil
     self.JumpBoostStatuses = { "FS_JUMPHELPER" }
+    self.JumpCheckGeneration = 0
+    self.DistanceCheckGeneration = 0
 
     -- Define the mapping of MCM settings to JumpHandler attributes
     local settingsMap = {
@@ -28,8 +32,6 @@ function JumpHandler:Init()
         distance_threshold_no_jump = "DistanceThresholdNoJump",
         stop_threshold_time = "StopThresholdTime",
         ignore_if_fall_damage = "IgnoreIfJumperTookFallDamage",
-        teleporting_method_enabled = "ShouldTeleportCompanions",
-        teleporting_method_distance_enabled = "ShouldTeleportDistantCompanionsNoJump",
         jump_boosting_method_enabled = { "ShouldBoostJump", "enabled" },
     }
 
@@ -59,6 +61,20 @@ function JumpHandler:Init()
             FSDebug(1,
                 string.format("Changing JumpHandler '%s' value to '%s'", payload.settingId, tostring(payload.value)))
         end
+
+        if payload.settingId == "mod_enabled" or payload.settingId == "teleporting_method_enabled" then
+            if not MCM.Get("mod_enabled") or not MCM.Get("teleporting_method_enabled") then
+                self:CancelJumpCheck()
+            end
+        end
+
+        if payload.settingId == "mod_enabled" or payload.settingId == "teleporting_method_distance_enabled" then
+            if MCM.Get("mod_enabled") and MCM.Get("teleporting_method_distance_enabled") then
+                self:CheckAndTeleportDistantPartyMembers()
+            else
+                self:CancelDistanceCheck()
+            end
+        end
     end)
 
     PartyMemberSelector:Init()
@@ -79,9 +95,12 @@ function JumpHandler:GetTeleportSettings(forceBypass)
 end
 
 function JumpHandler:CheckAndTeleportDistantPartyMembers()
-    if not MCM.Get("mod_enabled") then return end
+    if not MCM.Get("mod_enabled") or not MCM.Get("teleporting_method_distance_enabled") then
+        self:CancelDistanceCheck()
+        return
+    end
 
-    if not self.ShouldTeleportDistantCompanionsNoJump then return end
+    if self.DistanceCheckTimer then return end
 
     FSDebug(2, "Checking distant party members...")
 
@@ -95,15 +114,29 @@ function JumpHandler:CheckAndTeleportDistantPartyMembers()
     end
 
     -- Schedule the next check
-    Ext.Timer.WaitFor(math.random(600, 2000), function()
-        if not MCM.Get("mod_enabled") then return end
+    self.DistanceCheckGeneration = self.DistanceCheckGeneration + 1
+    local generation = self.DistanceCheckGeneration
+    self.DistanceCheckTimer = Ext.Timer.WaitFor(math.random(600, 2000), function()
+        if generation ~= self.DistanceCheckGeneration then return end
+        self.DistanceCheckTimer = nil
+        if not MCM.Get("mod_enabled") or not MCM.Get("teleporting_method_distance_enabled") then return end
 
         xpcall(function()
-            JumpHandlerInstance:CheckAndTeleportDistantPartyMembers()
+            self:CheckAndTeleportDistantPartyMembers()
         end, function(err)
             FSWarn(1, "Error in CheckAndTeleportDistantPartyMembers: " .. err)
         end)
     end)
+end
+
+--- Cancels the pending distance-based check, if any.
+---@return nil
+function JumpHandler:CancelDistanceCheck()
+    self.DistanceCheckGeneration = self.DistanceCheckGeneration + 1
+    if self.DistanceCheckTimer then
+        Ext.Timer.Cancel(self.DistanceCheckTimer)
+        self.DistanceCheckTimer = nil
+    end
 end
 
 function JumpHandler:GetActiveCharacterFromSet(set)
@@ -118,7 +151,7 @@ end
 function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
     if not self:IsValidTeleportSource(activeCharacter) then return end
 
-    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(activeCharacter)
+    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(activeCharacter, true)
     for _, companion in ipairs(filteredParty) do
         local companionPosition = { Osi.GetPosition(companion) }
         local activePosition = { Osi.GetPosition(activeCharacter) }
@@ -140,7 +173,7 @@ end
 
 function JumpHandler:PartyCrossedDistanceThreshold()
     local hostPosition = { Osi.GetPosition(self.Jumper) }
-    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
+    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper, true)
 
     for i, companion in ipairs(filteredParty) do
         local companionPosition = { Osi.GetPosition(companion) }
@@ -235,7 +268,7 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
     if skipChecks then
         filteredParty = self:GetForceTeleportMembers(self.Jumper)
     else
-        filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
+        filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper, true)
     end
 
     VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, nil,
@@ -269,36 +302,64 @@ function JumpHandler:HandleJumpTimerFinished()
         return
     end
 
+    if not MCM.Get("mod_enabled") or not MCM.Get("teleporting_method_enabled") then
+        self:CancelJumpCheck()
+        return
+    end
+
     FSDebug(1, "JumpHandler:HandleJumpTimerFinished: Jump timer finished...")
 
     -- Check if self.StopThresholdTime has passed since the first jump
     if self:CheckStopThresholdTime() then
-        self.HandlingJump = false
+        self:CancelJumpCheck()
         return
     end
 
     -- Ensure the jumper is currently in a valid position before proceeding
     if not self:IsValidTeleportSource(self.Jumper) then
         FSDebug(2, "JumpHandler:HandleJumpTimerFinished: Jumper in invalid position; delaying re-check...")
-        Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
-            JumpHandlerInstance:HandleJumpTimerFinished()
-        end)
+        self:ScheduleJumpCheck()
+        return
+    end
+
+    -- Stop polling if the jumper becomes ineligible before companions cross the distance threshold.
+    if not self:PassesCoreHandlingChecks(self.Jumper) then
+        self:CancelJumpCheck()
         return
     end
 
     -- Check if the distance has been crossed
     if self:PartyCrossedDistanceThreshold() then
         self.HandlingJump = false
-        if self.ShouldTeleportCompanions then
-            FSPrint(1,
-                "JumpHandler:PartyCrossedDistanceThreshold: Distance threshold crossed, teleporting party members...")
-            self:TeleportCompanionsToJumper()
-        end
+        FSPrint(1,
+            "JumpHandler:PartyCrossedDistanceThreshold: Distance threshold crossed, teleporting party members...")
+        self:TeleportCompanionsToJumper()
         return
     end
 
-    Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
-        JumpHandlerInstance:HandleJumpTimerFinished()
+    self:ScheduleJumpCheck()
+end
+
+--- Cancels the pending jump check and stops handling the current jump.
+---@return nil
+function JumpHandler:CancelJumpCheck()
+    self.JumpCheckGeneration = self.JumpCheckGeneration + 1
+    if self.JumpCheckTimer then
+        Ext.Timer.Cancel(self.JumpCheckTimer)
+        self.JumpCheckTimer = nil
+    end
+    self.HandlingJump = false
+end
+
+--- Schedules a jump check that ignores callbacks invalidated by a setting change.
+---@return nil
+function JumpHandler:ScheduleJumpCheck()
+    self.JumpCheckGeneration = self.JumpCheckGeneration + 1
+    local generation = self.JumpCheckGeneration
+    self.JumpCheckTimer = Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
+        if generation ~= self.JumpCheckGeneration then return end
+        self.JumpCheckTimer = nil
+        self:HandleJumpTimerFinished()
     end)
 end
 
@@ -473,9 +534,7 @@ function JumpHandler:HandleJump(params)
     end
 
     self.FirstJumpTime = Ext.Utils.MonotonicTime()
-    Ext.Timer.WaitFor(self.JumpCheckInterval * 1000, function()
-        JumpHandlerInstance:HandleJumpTimerFinished()
-    end)
+    self:ScheduleJumpCheck()
 end
 
 -- Since checking for fall damage is tricky given the current API, we'll use an approximation

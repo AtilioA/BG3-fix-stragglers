@@ -25,7 +25,7 @@
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Toggle the mod on/off."
+                            "Description": "Turns off both automatic teleport methods: teleport after jumping and teleport when companions fall behind."
                         },
                         {
                             "Id": "debug_level",
@@ -124,14 +124,14 @@
                     "Settings": [
                         {
                             "Id": "teleporting_method_enabled",
-                            "Name": "Enable teleporting method",
+                            "Name": "Teleport after jumping",
                             "Handles": {
                                 "NameHandle": "hb5c8d3bf0dfe4b819797c16a7c645f495ae7",
                                 "DescriptionHandle": "h77499842e1bc4f49b7aa2703719b74769bb3"
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Whether to teleport party members after some time and distance after jumping."
+                            "Description": "Automatically teleports party members after a jump when they cross the distance threshold. This is separate from the method that teleports companions when they fall behind without a jump."
                         },
                         {
                             "Id": "distance_threshold",
@@ -248,14 +248,14 @@
                     "Settings": [
                         {
                             "Id": "teleporting_method_distance_enabled",
-                            "Name": "Enable teleporting method (distance-based)",
+                            "Name": "Teleport when companions fall behind",
                             "Handles": {
                                 "NameHandle": "h03b53d47af774fafbda7196afa8a237e5dbf",
                                 "DescriptionHandle": "h84d2ab75eabc404eb0ea8b09b6654e5ad7da"
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Whether to teleport linked party members if they are too far away from the controlled character.\nDoes not depend on jumps."
+                            "Description": "Automatically teleports linked party members who are too far from the controlled character, regardless of jumps. This is separate from the method that teleports companions after a jump."
                         },
                         {
                             "Id": "distance_threshold_no_jump",

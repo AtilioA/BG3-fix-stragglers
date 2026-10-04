@@ -29,8 +29,9 @@ end
 
 --- Filters the party members for the given characterUUID.
 --- @param characterUUID Guid
+--- @param excludeCampResidents boolean|nil Whether to exclude camp residents.
 --- @return table finalMembers The filtered list of party members
-function PartyMemberSelector:FilterPartyMembersFor(characterUUID)
+function PartyMemberSelector:FilterPartyMembersFor(characterUUID, excludeCampResidents)
     local otherPartyMembers = VCHelpers.Party:GetOtherPartyMembers(characterUUID)
     local partyWithoutCharacter = {}
 
@@ -48,7 +49,7 @@ function PartyMemberSelector:FilterPartyMembersFor(characterUUID)
 
     local finalMembers = {}
     for _, member in ipairs(membersToCheck) do
-        if self:ShouldIncludeMember(member, characterUUID) then
+        if self:ShouldIncludeMember(member, characterUUID, excludeCampResidents) then
             table.insert(finalMembers, member)
         end
     end
@@ -59,12 +60,18 @@ end
 --- Checks if the given member should be included in the list of party members to consider.
 --- @param member Guid
 --- @param characterUUID Guid
+--- @param excludeCampResidents boolean|nil Whether to exclude camp residents.
 --- @return boolean
-function PartyMemberSelector:ShouldIncludeMember(member, characterUUID)
+function PartyMemberSelector:ShouldIncludeMember(member, characterUUID, excludeCampResidents)
     if member == characterUUID then
         FSDebug(2,
             "Excluding member: " ..
             VCHelpers.Loca:GetDisplayName(member) .. " because it is the same as characterUUID: " .. characterUUID)
+        return false
+    end
+
+    if excludeCampResidents and VCHelpers.Character:IsCharacterInCamp(member) then
+        FSDebug(2, "Excluding member because they are in camp.")
         return false
     end
 
