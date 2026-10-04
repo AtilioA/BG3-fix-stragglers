@@ -252,11 +252,11 @@ function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
         return
     end
 
-    local filteredParty = {}
-    if not skipChecks then
-        filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
-    else
+    local filteredParty
+    if skipChecks then
         filteredParty = self:GetForceTeleportMembers(character)
+    else
+        filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
     end
 
     VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, nil,
