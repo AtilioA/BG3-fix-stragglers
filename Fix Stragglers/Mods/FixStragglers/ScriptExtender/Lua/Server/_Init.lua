@@ -20,3 +20,11 @@ end
 JumpHandlerInstance = JumpHandler:New()
 
 SubscribedEvents.SubscribeToEvents()
+
+if Mods.Dribbles and not D then
+    D = Mods.Dribbles.RegisterTestGlobals({
+        ownerModuleUUID = ModuleUUID,
+        commandAlias = "fs_tests",
+    })
+    Ext.Require("Server/Tests/JumpHandler.test.lua")
+end

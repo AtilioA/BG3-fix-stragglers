@@ -194,8 +194,34 @@ function JumpHandler:IsValidTeleportSource(character)
     return true
 end
 
+--- Collects party members and party summons for force teleport, excluding the target.
+---@param character Guid
+---@return Guid[]
+function JumpHandler:GetForceTeleportMembers(character)
+    character = VCHelpers.Format:Guid(character)
+    local members = {}
+    local included = { [character] = true }
+    for _, member in ipairs(VCHelpers.Party:GetOtherPartyMembers(character)) do
+        if not included[member] then
+            included[member] = true
+            table.insert(members, member)
+        end
+    end
+
+    -- DB_Players omits summons, including those owned by the teleport target.
+    for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
+        local summon = VCHelpers.Format:Guid(row[1])
+        if not included[summon] then
+            included[summon] = true
+            table.insert(members, summon)
+        end
+    end
+
+    return members
+end
+
 --- Teleports the companions to the jumper.
---- PMSelector will filter out according to user settings and game conditions
+--- PMSelector filters automatic teleports; force teleport includes party summons.
 ---@param skipChecks boolean Skip checks for teleporting party members
 function JumpHandler:TeleportCompanionsToJumper(skipChecks)
     if not self.Jumper then
@@ -205,18 +231,21 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
 
     if not self:IsValidTeleportSource(self.Jumper) then return end
 
-    local filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
+    local filteredParty
     if skipChecks then
-        filteredParty = VCHelpers.Party:GetOtherPartyMembers(self.Jumper)
+        filteredParty = self:GetForceTeleportMembers(self.Jumper)
+    else
+        filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper)
     end
 
     VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, nil,
         self:GetTeleportSettings(skipChecks))
 end
 
---- Teleports the companions to the character
---- PMSelector will filter out according to user settings and game conditions
----@param character string GUID of the character to teleport to
+--- Teleports companions to the character, including party summons in force mode.
+---@param character Guid GUID of the character to teleport to
+---@param skipChecks boolean|nil
+---@return nil
 function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
     if not self:IsValidTeleportSource(character) then
         FSDebug(2, "JumpHandler:TeleportCompanionsToCharacter: Invalid teleport source: " .. character)
@@ -227,7 +256,7 @@ function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
     if not skipChecks then
         filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
     else
-        filteredParty = VCHelpers.Party:GetOtherPartyMembers(character)
+        filteredParty = self:GetForceTeleportMembers(character)
     end
 
     VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, nil,
