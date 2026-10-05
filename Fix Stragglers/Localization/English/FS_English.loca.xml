@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <contentList>
     <content contentuid="h0d5d09cae3ba4dd682a556f542fb96d6905d" version="1">0 = no debug, 1 = minimal, 2 = verbose debug logs.</content>
-    <content contentuid="h77499842e1bc4f49b7aa2703719b74769bb3" version="1">Whether to teleport party members after some time and distance after jumping.</content>
+    <content contentuid="h77499842e1bc4f49b7aa2703719b74769bb3" version="1">Automatically teleports party members after a jump when they cross the distance threshold. This is separate from the method that teleports companions when they fall behind without a jump.</content>
     <content contentuid="h15c7014d00c94bf0b760fe240477401d3a79" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the jumper.&lt;br&gt;3m = ~10ft</content>
     <content contentuid="h36c7b7292c9f4822a37c17a32467fb81e45a" version="1">Interval in seconds between distance checks after jumping.&lt;br&gt;Will periodically check if party members have crossed the distance threshold.&lt;br&gt;This check is repeated every X seconds until the time threshold (set below) is reached.</content>
     <content contentuid="h6b80cdc8f7dd4462bcccd240c01fed49aaff" version="1">Time threshold to stop checking for distance after jumping.&lt;br&gt;After this number of seconds, the mod will stop checking if party members crossed the distance threshold.</content>
@@ -12,9 +12,9 @@
     <content contentuid="h21b8b24dce564043bd4e227f2acebdd23g04" version="1">Whether to buff jump distance for companions right when your character jumps.</content>
     <content contentuid="he1faf010cea447b19f9dd1ef6ca720176775" version="1">Whether to only help party members that are grouped or linked to the jumper/controlled character.</content>
     <content contentuid="hca9298b5534042ac85011f24f6d5b5f485a1" version="1">If enabled, only party members with STR equal or higher than the jumper/controlled character will be helped</content>
-    <content contentuid="h3f0d2ff3cc57431cb0780bb8b27e1e2f7bag" version="1">Toggle the mod on/off.</content>
+    <content contentuid="h3f0d2ff3cc57431cb0780bb8b27e1e2f7bag" version="1">Disables all mod features, including both automatic teleport methods, manual teleports, and jump boosting.</content>
     <content contentuid="heee1a7e5bd444eb18d50a0402c95a76bd288" version="1">Ignore if fall damage</content>
-    <content contentuid="hb5c8d3bf0dfe4b819797c16a7c645f495ae7" version="1">Enable teleporting method</content>
+    <content contentuid="hb5c8d3bf0dfe4b819797c16a7c645f495ae7" version="1">Teleport after jumping</content>
     <content contentuid="h0dc4ecd51b0c42ffa14c8d3e99a2fb19abe9" version="1">Distance threshold (meters)</content>
     <content contentuid="h1bda9c3b01ad4dc18a634e9a617e70851gg6" version="1">Jump check interval (seconds)</content>
     <content contentuid="hef55c970144a4e39967041ba6d812190g9e1" version="1">Stop threshold time (seconds)</content>
@@ -39,8 +39,8 @@
     <content contentuid="hfd1604bc30924ef0a0355cb1a4838ace5513" version="1">Temporarily boosts jumping capabilities outside of combat. Added by Fix Stragglers.</content>
     <content contentuid="hb1b36194c4e04695aaa127ff96b316b546c8" version="1">Boost me up</content>
     <content contentuid="h8776d0d2b79e41ea8df4d56671ca5f789edf" version="1">These settings allow you to optionally configure the teleporting method.&lt;br&gt;The defaults should work for most cases, feel free to report better values on Nexus.</content>
-    <content contentuid="h03b53d47af774fafbda7196afa8a237e5dbf" version="1">Enable teleporting method (distance-based, without having jumped)</content>
-    <content contentuid="h84d2ab75eabc404eb0ea8b09b6654e5ad7da" version="1">Whether to teleport linked party members if they are too far away from the controlled character.&lt;br&gt;Does not depend on jumps.</content>
+    <content contentuid="h03b53d47af774fafbda7196afa8a237e5dbf" version="1">Teleport when companions fall behind</content>
+    <content contentuid="h84d2ab75eabc404eb0ea8b09b6654e5ad7da" version="1">Automatically teleports linked party members who are too far from the controlled character, regardless of jumps. This is separate from the method that teleports companions after a jump.</content>
     <content contentuid="h09d65cb72c104e17aaf50c7335c0462d356c" version="1">Distance threshold (meters) (without having jumped)</content>
     <content contentuid="h695ec44009634bc79d2ce353ddf435655c87" version="1">Distance threshold in meters for teleporting party members.&lt;br&gt;Members will be teleported if they are X meters away from the controlled character, regardless of jumps.&lt;br&gt;10m = ~32ft</content>
     <content contentuid="h9156ae140a5c4ad187da86aaf77922f9d45c" version="1">Apply VFX to teleported characters</content>

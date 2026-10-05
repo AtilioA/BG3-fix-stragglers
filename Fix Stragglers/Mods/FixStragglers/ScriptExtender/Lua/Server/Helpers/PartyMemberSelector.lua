@@ -30,41 +30,26 @@ end
 --- Filters the party members for the given characterUUID.
 --- @param characterUUID Guid
 --- @param excludeCampResidents boolean|nil Whether to exclude camp residents.
---- @return table finalMembers The filtered list of party members
+--- @return Guid[] finalMembers The filtered list of party members
 function PartyMemberSelector:FilterPartyMembersFor(characterUUID, excludeCampResidents)
-    local otherPartyMembers = VCHelpers.Party:GetOtherPartyMembers(characterUUID)
-    local partyWithoutCharacter = {}
-
-    -- Remove characterUUID from otherPartyMembers
-    for i, member in ipairs(otherPartyMembers) do
-        if member ~= characterUUID then
-            table.insert(partyWithoutCharacter, member)
-        end
-    end
-
-    local membersToCheck = partyWithoutCharacter
+    characterUUID = VCHelpers.Format:Guid(characterUUID)
+    local membersToCheck
     if self.OnlyLinkedCharacters then
         membersToCheck = VCHelpers.Character:GetCharactersLinkedWith(characterUUID)
     else
+        membersToCheck = VCHelpers.Party:GetOtherPartyMembers(characterUUID)
         -- DB_Players omits summons; add every party summon so the summon setting can decide.
-        local target = VCHelpers.Format:Guid(characterUUID)
-        local seen = {}
-        for _, member in ipairs(membersToCheck) do
-            seen[member] = true
-        end
-        -- REVIEW: Maybe not the best database for summons
         for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
-            local summon = VCHelpers.Format:Guid(row[1])
-            if summon ~= target and not seen[summon] then
-                seen[summon] = true
-                table.insert(membersToCheck, summon)
-            end
+            table.insert(membersToCheck, row[1])
         end
     end
 
     local finalMembers = {}
+    local included = { [characterUUID] = true }
     for _, member in ipairs(membersToCheck) do
-        if self:ShouldIncludeMember(member, characterUUID, excludeCampResidents) then
+        member = VCHelpers.Format:Guid(member)
+        if not included[member] and self:ShouldIncludeMember(member, characterUUID, excludeCampResidents) then
+            included[member] = true
             table.insert(finalMembers, member)
         end
     end

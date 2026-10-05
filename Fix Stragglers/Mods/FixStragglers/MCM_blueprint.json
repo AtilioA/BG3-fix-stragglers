@@ -25,7 +25,7 @@
                             },
                             "Type": "checkbox",
                             "Default": true,
-                            "Description": "Turns off both automatic teleport methods: teleport after jumping and teleport when companions fall behind."
+                            "Description": "Disables all mod features, including both automatic teleport methods, manual teleports, and jump boosting."
                         },
                         {
                             "Id": "debug_level",

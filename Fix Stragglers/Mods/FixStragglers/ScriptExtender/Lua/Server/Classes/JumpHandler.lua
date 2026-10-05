@@ -9,6 +9,7 @@
 ---@field public IgnoreIfJumperTookFallDamage boolean -- Option to enable checking fall damage from jumper
 ---@field public DistanceThresholdNoJump number - Distance threshold for teleporting party members regardless of jump
 ---@field public ShouldBoostJump table -- Options for boosting jump
+---@field public BoostedCompanions table<Guid, string[]>|nil
 ---@field public JumpCheckTimer TimerId|nil
 ---@field public JumpCheckGeneration integer
 ---@field public DistanceCheckTimer TimerId|nil
@@ -226,14 +227,17 @@ function JumpHandler:IsValidTeleportSource(character)
     return true
 end
 
---- Collects party members and linked characters for force teleport, excluding the target.
+--- Collects party members, summons, and linked followers, excluding the target.
 ---@param character Guid
 ---@return Guid[]
 function JumpHandler:GetForceTeleportMembers(character)
     character = VCHelpers.Format:Guid(character)
     local members = {}
     local included = { [character] = true }
+    ---@param member Guid
+    ---@return nil
     local function addMember(member)
+        member = VCHelpers.Format:Guid(member)
         if not included[member] then
             included[member] = true
             table.insert(members, member)
@@ -247,7 +251,7 @@ function JumpHandler:GetForceTeleportMembers(character)
 
     -- DB_Players omits summons. Force teleport brings them all, even summons that are not linked to the party.
     for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
-        addMember(VCHelpers.Format:Guid(row[1]))
+        addMember(row[1])
     end
 
     -- Viewparty-linked characters cover followers that DB_Players and DB_PlayerSummons omit.
@@ -282,7 +286,7 @@ function JumpHandler:TeleportCharactersToCharacter(targetCharacter, characters, 
     for _, member in ipairs(characters) do
         local memberCanTeleport, memberReason = VCHelpers.Teleporting:CanCharacterTeleport(member, settings)
         if memberCanTeleport then
-            -- Summon flag 0: only explicit candidates move, unlinked summons never follow.
+            -- Disable implicit following so only the selected characters move.
             Osi.TeleportToPosition(member, x, y, z, "FSTeleportToPosition_" .. member, 0, 0, 0, 0, 1)
         else
             FSDebug(1,
@@ -293,7 +297,7 @@ function JumpHandler:TeleportCharactersToCharacter(targetCharacter, characters, 
 end
 
 --- Teleports the companions to the jumper.
---- PMSelector filters automatic teleports; force teleport includes the linked party.
+--- PMSelector filters automatic teleports; force teleport includes all party members and summons.
 ---@param skipChecks boolean Skip checks for teleporting party members
 function JumpHandler:TeleportCompanionsToJumper(skipChecks)
     if not self.Jumper then
@@ -352,16 +356,15 @@ function JumpHandler:HandleJumpTimerFinished()
         return
     end
 
-    -- Ensure the jumper is currently in a valid position before proceeding
-    if not self:IsValidTeleportSource(self.Jumper) then
-        FSDebug(2, "JumpHandler:HandleJumpTimerFinished: Jumper in invalid position; delaying re-check...")
-        self:ScheduleJumpCheck()
+    -- Camp, combat, and control changes stop polling even when the terrain is unsafe.
+    if not self:PassesCoreHandlingChecks(self.Jumper) then
+        self:CancelJumpCheck()
         return
     end
 
-    -- Stop polling if the jumper becomes ineligible before companions cross the distance threshold.
-    if not self:PassesCoreHandlingChecks(self.Jumper) then
-        self:CancelJumpCheck()
+    if not self:IsValidTeleportSource(self.Jumper) then
+        FSDebug(2, "JumpHandler:HandleJumpTimerFinished: Jumper in invalid position; delaying re-check...")
+        self:ScheduleJumpCheck()
         return
     end
 
@@ -410,11 +413,19 @@ function JumpHandler:BoostCompanionsJump()
     self.BoostedCompanions = statusesApplied
 end
 
+--- Applies boosts and retains active boost records for combat cleanup.
+---@param companions Guid[]
+---@return table<Guid, string[]>
 function JumpHandler:ApplyStatusesToCompanions(companions)
-    local statusesApplied = {}
+    local statusesApplied = self.BoostedCompanions or {}
 
     for _, companion in pairs(companions) do
-        statusesApplied[companion] = self:ApplyStatusesToCompanion(companion)
+        -- A repeat jump can leave an existing boost active; keep it tracked for cleanup.
+        local applied = self:ApplyStatusesToCompanion(companion)
+        statusesApplied[companion] = statusesApplied[companion] or {}
+        for _, status in ipairs(applied) do
+            table.insert(statusesApplied[companion], status)
+        end
     end
 
     return statusesApplied
@@ -564,12 +575,13 @@ function JumpHandler:HandleJump(params)
 
     self.Jumper = CasterGuid
     FSPrint(2, "JumpHandler:HandleJump: Handling jump...")
-    self.HandlingJump = true
-
     if self.ShouldBoostJump.enabled then
-        JumpHandlerInstance:BoostCompanionsJump()
+        self:BoostCompanionsJump()
     end
 
+    if not MCM.Get("teleporting_method_enabled") then return end
+
+    self.HandlingJump = true
     self.FirstJumpTime = Ext.Utils.MonotonicTime()
     self:ScheduleJumpCheck()
 end

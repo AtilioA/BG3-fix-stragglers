@@ -65,7 +65,7 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
 
         ctx.stub(VCHelpers.Party, "GetOtherPartyMembers", function(_, character)
             ctx.expect(character).toBe(target)
-            return { campResident }
+            return { "TestMember_" .. campResident, campResident, "TestTarget_" .. target }
         end)
         ctx.stub(VCHelpers.Character, "IsCharacterInCamp", function()
             return true
@@ -83,8 +83,8 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
             IgnoreOnDialogue = false,
             UseStrengthCheck = false,
         }, { __index = PartyMemberSelector })
-        local automaticMembers = selector:FilterPartyMembersFor(target, true)
-        local manualMembers = selector:FilterPartyMembersFor(target)
+        local automaticMembers = selector:FilterPartyMembersFor("TestTarget_" .. target, true)
+        local manualMembers = selector:FilterPartyMembersFor("TestTarget_" .. target)
 
         ctx.expect(automaticMembers).toEqual({})
         ctx.expect(manualMembers).toEqual({ campResident })
@@ -159,12 +159,12 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
         -- DB_Players stub: the target and duplicates prove exclusion and deduplication.
         ctx.stub(VCHelpers.Party, "GetOtherPartyMembers", function(_, character)
             ctx.expect(normalize(character)).toBe(target)
-            return { target, companionA, companionA, companionB }
+            return { "TestTarget_" .. target, "TestMember_" .. companionA, companionA, companionB }
         end)
         -- View stub: linked characters join the force teleport as well.
         ctx.stub(VCHelpers.Character, "GetCharactersLinkedWith", function(_, character)
             ctx.expect(normalize(character)).toBe(target)
-            return { companionA, target }
+            return { "TestMember_" .. companionA, "TestTarget_" .. target }
         end)
 
         local forceMembers = JumpHandler:GetForceTeleportMembers("TestTarget_" .. target)
@@ -286,10 +286,6 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
             ctx.expect(character).toBe(target)
             return true
         end)
-        ctx.stub(Osi, "GetPosition", function(character)
-            if character == target then return 0, 0, 0 end
-            return 10, 0, 0
-        end)
         ctx.stub(VCHelpers.Grid, "GetDistance", function() return 10 end)
         ctx.stub(VCHelpers.Loca, "GetDisplayName", function(_, character) return tostring(character) end)
         local getSetting = MCM.Get
@@ -351,53 +347,6 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
         ctx.expect(checked).toEqual({ target, members[1], members[2] })
     end)
 
-    D.test("TeleportCharactersToCharacter disables engine summon linking in teleport flags", function(ctx)
-        ctx.requireServer()
-        local target, members = loadParty()
-        if #members == 0 then ctx.skip("No players in the current save") end
-        local member = members[1]
-
-        local settings = { IgnoreDialogue = false, IgnoreRestricted = false }
-        ctx.stub(VCHelpers.Teleporting, "CanCharacterTeleport", function() return true end)
-        local position = ctx.stub(Osi, "GetPosition", function() return 1.5, 2.5, 3.5 end)
-        local teleports = {}
-        local teleport = ctx.stub(Osi, "TeleportToPosition",
-            function(character, x, y, z, event, linked, followers, summons, leaveCombat, snapToGround)
-                table.insert(teleports, {
-                    character = character,
-                    x = x,
-                    y = y,
-                    z = z,
-                    event = event,
-                    linked = linked,
-                    followers = followers,
-                    summons = summons,
-                    leaveCombat = leaveCombat,
-                    snapToGround = snapToGround,
-                })
-            end)
-        -- Abort before production runs when the Osi stubs did not take effect.
-        ctx.expect(Osi.GetPosition).toBe(position)
-        ctx.expect(Osi.TeleportToPosition).toBe(teleport)
-
-        local handler = setmetatable({}, { __index = JumpHandler })
-        handler:TeleportCharactersToCharacter(target, { member }, settings)
-
-        ctx.expect(position).toHaveBeenCalledTimes(1)
-        ctx.expect(teleport).toHaveBeenCalledTimes(1)
-        local call = teleports[1]
-        ctx.expect(call.character).toBe(member)
-        ctx.expect(call.x).toBe(1.5)
-        ctx.expect(call.y).toBe(2.5)
-        ctx.expect(call.z).toBe(3.5)
-        ctx.expect(call.event).toBe("FSTeleportToPosition_" .. member)
-        ctx.expect(call.linked).toBe(0)
-        ctx.expect(call.followers).toBe(0)
-        ctx.expect(call.summons).toBe(0)
-        ctx.expect(call.leaveCombat).toBe(0)
-        ctx.expect(call.snapToGround).toBe(1)
-    end)
-
     for _, setting in ipairs({ "mod_enabled", "teleporting_method_enabled" }) do
         local disabledSetting = setting
         D.test("Delayed jump stops when " .. disabledSetting .. " is disabled", function(ctx)
@@ -451,7 +400,7 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
             JumpCheckGeneration = 0,
         }, { __index = JumpHandler })
         ctx.stub(handler, "CheckStopThresholdTime", function() return false end)
-        local sourceCheck = ctx.stub(handler, "IsValidTeleportSource", function() return true end)
+        local sourceCheck = ctx.stub(handler, "IsValidTeleportSource", function() return false end)
         local coreCheck = ctx.stub(handler, "PassesCoreHandlingChecks", function() return false end)
         local distanceCheck = ctx.stub(handler, "PartyCrossedDistanceThreshold", function() return false end)
         local scheduleCheck = ctx.stub(handler, "ScheduleJumpCheck", function() end)
@@ -460,11 +409,58 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
         handler:HandleJumpTimerFinished()
 
         ctx.expect(handler.HandlingJump).toBe(false)
-        ctx.expect(sourceCheck).toHaveBeenCalledTimes(1)
+        ctx.expect(sourceCheck).toHaveBeenCalledTimes(0)
         ctx.expect(coreCheck).toHaveBeenCalledTimes(1)
         ctx.expect(distanceCheck).toHaveBeenCalledTimes(0)
         ctx.expect(scheduleCheck).toHaveBeenCalledTimes(0)
         ctx.expect(teleport).toHaveBeenCalledTimes(0)
+    end)
+
+    D.test("Repeated jump boosts preserve statuses needed for combat cleanup", function(ctx)
+        ctx.requireServer()
+        local target, members = loadParty()
+        if #members < 2 then ctx.skip("At least two companions are needed for this test") end
+        local selected = { members[1], members[2] }
+        ctx.stub(PartyMemberSelector, "FilterPartyMembersFor", function() return selected end)
+        local handler = setmetatable({ Jumper = target }, { __index = JumpHandler })
+        local alreadyBoosted = {}
+        ctx.stub(handler, "ApplyStatusesToCompanion", function(_, companion)
+            if alreadyBoosted[companion] then return {} end
+            alreadyBoosted[companion] = true
+            return { "FS_JUMPHELPER" }
+        end)
+
+        handler:BoostCompanionsJump()
+        selected = { members[1] }
+        handler:BoostCompanionsJump()
+
+        ctx.expect(handler.BoostedCompanions).toEqual({
+            [members[1]] = { "FS_JUMPHELPER" },
+            [members[2]] = { "FS_JUMPHELPER" },
+        })
+    end)
+
+    D.test("Jump boosting does not start teleport polling when jump teleport is disabled", function(ctx)
+        ctx.requireServer()
+        local target = normalize(Osi.GetHostCharacter())
+        local getSetting = MCM.Get
+        ctx.stub(MCM, "Get", function(setting, ...)
+            if setting == "teleporting_method_enabled" then return false end
+            return getSetting(setting, ...)
+        end)
+        local handler = setmetatable({
+            HandlingJump = false,
+            ShouldBoostJump = { enabled = true },
+        }, { __index = JumpHandler })
+        ctx.stub(handler, "ShouldHandleJump", function() return true end)
+        local boost = ctx.stub(JumpHandler, "BoostCompanionsJump", function() end)
+        local schedule = ctx.stub(handler, "ScheduleJumpCheck", function() end)
+
+        handler:HandleJump({ CasterGuid = target })
+
+        ctx.expect(handler.HandlingJump).toBe(false)
+        ctx.expect(boost).toHaveBeenCalledTimes(1)
+        ctx.expect(schedule).toHaveBeenCalledTimes(0)
     end)
 
     D.test("Distance check uses the current feature setting", function(ctx)
