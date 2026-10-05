@@ -89,8 +89,8 @@ function JumpHandler:GetTeleportSettings(forceBypass)
     end
 
     return {
-        IgnoreDialogue = PartyMemberSelector.IgnoreOnDialogue,
-        IgnoreRestricted = PartyMemberSelector.IgnoreRestrictedCharacters
+        IgnoreDialogue = MCM.Get("ignore_on_dialogue"),
+        IgnoreRestricted = MCM.Get("ignore_restricted_characters"),
     }
 end
 
@@ -165,8 +165,7 @@ function JumpHandler:TeleportDistantPartyMembers(activeCharacter)
                 "JumpHandler:CheckAndTeleportDistantPartyMembers: Teleporting " ..
                 VCHelpers.Loca:GetDisplayName(companion) ..
                 " to " .. VCHelpers.Loca:GetDisplayName(activeCharacter))
-            VCHelpers.Teleporting:TeleportCharactersToCharacter(activeCharacter, { companion },
-                nil, self:GetTeleportSettings())
+            self:TeleportCharactersToCharacter(activeCharacter, { companion }, self:GetTeleportSettings())
         end
     end
 end
@@ -227,34 +226,74 @@ function JumpHandler:IsValidTeleportSource(character)
     return true
 end
 
---- Collects party members and party summons for force teleport, excluding the target.
+--- Collects party members and linked characters for force teleport, excluding the target.
 ---@param character Guid
 ---@return Guid[]
 function JumpHandler:GetForceTeleportMembers(character)
     character = VCHelpers.Format:Guid(character)
     local members = {}
     local included = { [character] = true }
-    for _, member in ipairs(VCHelpers.Party:GetOtherPartyMembers(character)) do
+    local function addMember(member)
         if not included[member] then
             included[member] = true
             table.insert(members, member)
         end
     end
 
-    -- DB_Players omits summons, including those owned by the teleport target.
+    -- Force teleport helps the whole party, regardless of grouping or settings.
+    for _, member in ipairs(VCHelpers.Party:GetOtherPartyMembers(character)) do
+        addMember(member)
+    end
+
+    -- DB_Players omits summons. Force teleport brings them all, even summons that are not linked to the party.
     for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
-        local summon = VCHelpers.Format:Guid(row[1])
-        if not included[summon] then
-            included[summon] = true
-            table.insert(members, summon)
-        end
+        addMember(VCHelpers.Format:Guid(row[1]))
+    end
+
+    -- Viewparty-linked characters cover followers that DB_Players and DB_PlayerSummons omit.
+    for _, member in ipairs(VCHelpers.Character:GetCharactersLinkedWith(character)) do
+        addMember(member)
     end
 
     return members
 end
 
+--- Teleports the given characters to the target without implicit summon movement.
+---@param targetCharacter Guid
+---@param characters Guid[]
+---@param settings table|nil
+---@return nil
+function JumpHandler:TeleportCharactersToCharacter(targetCharacter, characters, settings)
+    if not targetCharacter or #characters == 0 then return end
+
+    local canTeleport, reason = VCHelpers.Teleporting:CanCharacterTeleport(targetCharacter, settings)
+    if not canTeleport then
+        FSDebug(1,
+            "Skipping teleport to " .. VCHelpers.Loca:GetDisplayName(targetCharacter) .. ": " .. (reason or "Unknown reason"))
+        return
+    end
+
+    local x, y, z = Osi.GetPosition(targetCharacter)
+    if not x or not y or not z then
+        FSDebug(1, "Skipping teleport to " .. VCHelpers.Loca:GetDisplayName(targetCharacter) .. ": position not found.")
+        return
+    end
+
+    for _, member in ipairs(characters) do
+        local memberCanTeleport, memberReason = VCHelpers.Teleporting:CanCharacterTeleport(member, settings)
+        if memberCanTeleport then
+            -- Summon flag 0: only explicit candidates move, unlinked summons never follow.
+            Osi.TeleportToPosition(member, x, y, z, "FSTeleportToPosition_" .. member, 0, 0, 0, 0, 1)
+        else
+            FSDebug(1,
+                "Skipping teleport for " ..
+                VCHelpers.Loca:GetDisplayName(member) .. ": " .. (memberReason or "Unknown reason"))
+        end
+    end
+end
+
 --- Teleports the companions to the jumper.
---- PMSelector filters automatic teleports; force teleport includes party summons.
+--- PMSelector filters automatic teleports; force teleport includes the linked party.
 ---@param skipChecks boolean Skip checks for teleporting party members
 function JumpHandler:TeleportCompanionsToJumper(skipChecks)
     if not self.Jumper then
@@ -271,8 +310,7 @@ function JumpHandler:TeleportCompanionsToJumper(skipChecks)
         filteredParty = PartyMemberSelector:FilterPartyMembersFor(self.Jumper, true)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(self.Jumper, filteredParty, nil,
-        self:GetTeleportSettings(skipChecks))
+    self:TeleportCharactersToCharacter(self.Jumper, filteredParty, self:GetTeleportSettings(skipChecks))
 end
 
 --- Teleports companions to the character, including party summons in force mode.
@@ -292,8 +330,7 @@ function JumpHandler:TeleportCompanionsToCharacter(character, skipChecks)
         filteredParty = PartyMemberSelector:FilterPartyMembersFor(character)
     end
 
-    VCHelpers.Teleporting:TeleportCharactersToCharacter(character, filteredParty, nil,
-        self:GetTeleportSettings(skipChecks))
+    self:TeleportCharactersToCharacter(character, filteredParty, self:GetTeleportSettings(skipChecks))
 end
 
 --- Handles the jump timer finished event

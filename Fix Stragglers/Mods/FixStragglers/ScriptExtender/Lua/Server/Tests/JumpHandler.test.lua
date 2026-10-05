@@ -1,4 +1,51 @@
 D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "teleport" } }, function()
+    --- Normalizes a template-prefixed GUID the way JumpHandler does.
+    ---@param guid string|nil
+    ---@return string|nil
+    local function normalize(guid)
+        return VCHelpers.Format:Guid(guid)
+    end
+
+    --- Returns the normalized host and the unique normalized party members, excluding the host.
+    ---@return string, string[]
+    local function loadParty()
+        local target = normalize(Osi.GetHostCharacter())
+        local members = {}
+        local seen = {}
+        for _, row in ipairs(Osi.DB_Players:Get(nil)) do
+            local guid = normalize(row[1])
+            if guid and guid ~= target and not seen[guid] then
+                seen[guid] = true
+                table.insert(members, guid)
+            end
+        end
+        return target, members
+    end
+
+    --- Returns one active (alive, free, out of combat) party summon.
+    ---@return string|nil
+    local function findActiveSummon()
+        for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
+            local summon = normalize(row[1])
+            if Osi.IsControlled(summon) == 0 and Osi.IsInCombat(summon) == 0 and Osi.IsDead(summon) == 0
+                and Osi.GetHitpoints(summon) > 0 then
+                return summon
+            end
+        end
+    end
+
+    --- Returns one party summon that is not linked to the party line.
+    ---@return string|nil
+    local function findBlockedSummon()
+        for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
+            local summon = normalize(row[1])
+            local entity = Ext.Entity.Get(summon)
+            if entity and entity.BlockFollow ~= nil then
+                return summon
+            end
+        end
+    end
+
     D.test("Automatic selection excludes camp residents when restricted filtering is off", function(ctx)
         ctx.requireServer()
         local players = Osi.DB_Players:Get(nil)
@@ -23,6 +70,12 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
         ctx.stub(VCHelpers.Character, "IsCharacterInCamp", function()
             return true
         end)
+        -- Keep summons out of this test: it only checks camp filtering.
+        local getSetting = MCM.Get
+        ctx.stub(MCM, "Get", function(setting, ...)
+            if setting == "ignore_summons" then return true end
+            return getSetting(setting, ...)
+        end)
 
         local selector = setmetatable({
             OnlyLinkedCharacters = false,
@@ -37,168 +90,313 @@ D.describe("JumpHandler teleport selection", { tags = { "server", "runtime", "te
         ctx.expect(manualMembers).toEqual({ campResident })
     end)
 
-    for _, ignoreSummons in ipairs({ false, true }) do
-        D.test("Force candidates include summons with ignore_summons=" .. tostring(ignoreSummons), function(ctx)
-            ctx.requireServer()
-            local getSetting = MCM.Get
-            ctx.stub(MCM, "Get", function(setting, ...)
-                if setting == "ignore_summons" then return ignoreSummons end
-                return getSetting(setting, ...)
-            end)
-            local players = Osi.DB_Players:Get(nil)
-            if #players == 0 then ctx.skip("No players in the current save") end
-            local summons = Osi.DB_PlayerSummons:Get(nil)
-            if #summons == 0 then ctx.skip("No player summons in the current save") end
-            local owner = Osi.CharacterGetOwner(summons[1][1])
-            if not owner then ctx.skip("First player summon has no owner") end
-            local target = VCHelpers.Format:Guid(owner)
-            local party, expected = {}, {}
-            for _, row in ipairs(players) do
-                local member = VCHelpers.Format:Guid(row[1])
-                party[#party + 1] = member
-                party[#party + 1] = member
-                if member ~= target then
-                    expected[member] = true
-                end
-            end
-            -- Overlapping helper and database results must include each summon once.
-            for index, row in ipairs(summons) do
-                local summon = VCHelpers.Format:Guid(row[1])
-                if index > 1 then party[#party + 1] = summon end
-                if summon ~= target then expected[summon] = true end
-            end
-            party[#party + 1] = target
-            local originalParty = { table.unpack(party) }
-            local partyLookup = ctx.stub(VCHelpers.Party, "GetOtherPartyMembers", function(_, character)
-                ctx.expect(character).toBe(target)
-                return party
-            end)
-            local selector = ctx.stub(PartyMemberSelector, "FilterPartyMembersFor", function()
-                error("Force candidates must bypass other selection filters")
-            end)
-            local members = JumpHandler:GetForceTeleportMembers("TestTarget_" .. target)
-            local actual = {}
-            for _, member in ipairs(members) do
-                ctx.expect(member).toBe(VCHelpers.Format:Guid(member))
-                ctx.expect(actual[member]).toBe(nil)
-                actual[member] = true
-            end
-            ctx.expect(actual).toEqual(expected)
-            ctx.expect(party).toEqual(originalParty)
-            ctx.expect(partyLookup).toHaveBeenCalledTimes(1)
-            ctx.expect(selector).toHaveBeenCalledTimes(0)
-        end)
-    end
-
-    D.test("Force candidates exclude a summon target and deduplicate live summons", function(ctx)
+    D.test("Selector excludes summons that are not linked to the party line", function(ctx)
         ctx.requireServer()
+        local target = normalize(Osi.GetHostCharacter())
+        local blocked = findBlockedSummon()
+        if not blocked then ctx.skip("No unlinked summon in the current save") end
+
         local getSetting = MCM.Get
         ctx.stub(MCM, "Get", function(setting, ...)
             if setting == "ignore_summons" then return false end
             return getSetting(setting, ...)
         end)
-        local summons = Osi.DB_PlayerSummons:Get(nil)
-        if #summons == 0 then ctx.skip("No player summons in the current save") end
-        local target = VCHelpers.Format:Guid(summons[1][1])
-        local party, expected = { target, target }, {}
-        for _, row in ipairs(summons) do
-            local member = VCHelpers.Format:Guid(row[1])
-            if member ~= target then
-                expected[member] = true
-                party[#party + 1] = member
-                party[#party + 1] = member
-            end
+        local selector = setmetatable({
+            OnlyLinkedCharacters = true,
+            IgnoreRestrictedCharacters = false,
+            IgnoreOnDialogue = false,
+            UseStrengthCheck = false,
+        }, { __index = PartyMemberSelector })
+
+        ctx.expect(selector:ShouldIncludeMember(blocked, target)).toBe(false)
+    end)
+
+    D.test("Selector includes summons when the link restriction is off", function(ctx)
+        ctx.requireServer()
+        local target = normalize(Osi.GetHostCharacter())
+        local summon = findActiveSummon()
+        if not summon then ctx.skip("No active summon in the current save") end
+
+        local getSetting = MCM.Get
+        ctx.stub(MCM, "Get", function(setting, ...)
+            if setting == "ignore_summons" then return false end
+            return getSetting(setting, ...)
+        end)
+        local selector = setmetatable({
+            OnlyLinkedCharacters = false,
+            IgnoreRestrictedCharacters = false,
+            IgnoreOnDialogue = false,
+            UseStrengthCheck = false,
+        }, { __index = PartyMemberSelector })
+
+        ctx.expect(selector:ShouldIncludeMember(summon, target)).toBe(true)
+
+        local filtered = selector:FilterPartyMembersFor(target)
+        local included = false
+        for _, member in ipairs(filtered) do
+            if member == summon then included = true end
         end
-        ctx.stub(VCHelpers.Party, "GetOtherPartyMembers", function() return party end)
-        local members = JumpHandler:GetForceTeleportMembers("TestTarget_" .. target)
-        local actual = {}
+        ctx.expect(included).toBe(true)
+    end)
+
+    D.test("Force candidates include every party member and every party summon", function(ctx)
+        ctx.requireServer()
+        local target, members = loadParty()
+        if #members < 2 then ctx.skip("At least two party members are needed for this test") end
+        local summons = {}
+        for _, row in ipairs(Osi.DB_PlayerSummons:Get(nil)) do
+            local summon = normalize(row[1])
+            if summon and summon ~= target then summons[#summons + 1] = summon end
+        end
+        if #summons == 0 then ctx.skip("No summons in the current save") end
+
+        local companions = {}
         for _, member in ipairs(members) do
+            if member ~= target then companions[#companions + 1] = member end
+        end
+        if #companions < 2 then ctx.skip("At least two companions are needed for this test") end
+        local companionA, companionB = companions[1], companions[2]
+        -- DB_Players stub: the target and duplicates prove exclusion and deduplication.
+        ctx.stub(VCHelpers.Party, "GetOtherPartyMembers", function(_, character)
+            ctx.expect(normalize(character)).toBe(target)
+            return { target, companionA, companionA, companionB }
+        end)
+        -- View stub: linked characters join the force teleport as well.
+        ctx.stub(VCHelpers.Character, "GetCharactersLinkedWith", function(_, character)
+            ctx.expect(normalize(character)).toBe(target)
+            return { companionA, target }
+        end)
+
+        local forceMembers = JumpHandler:GetForceTeleportMembers("TestTarget_" .. target)
+
+        local expected = { [companionA] = true, [companionB] = true }
+        for _, summon in ipairs(summons) do
+            expected[summon] = true
+        end
+        local actual = {}
+        for _, member in ipairs(forceMembers) do
             ctx.expect(actual[member]).toBe(nil)
             actual[member] = true
         end
         ctx.expect(actual).toEqual(expected)
+        ctx.expect(actual[target]).toBe(nil)
     end)
 
-    for _, method in ipairs({ "TeleportCompanionsToCharacter", "TeleportCompanionsToJumper" }) do
-        local entryPoint = method
-        D.test(entryPoint .. " force uses VC dispatch and bypasses automatic filters", function(ctx)
+    for _, entryPoint in ipairs({ "TeleportCompanionsToCharacter", "TeleportCompanionsToJumper" }) do
+        local method = entryPoint
+        D.test(method .. " force bypasses settings and dispatches through JumpHandler teleport", function(ctx)
             ctx.requireServer()
-            local target = VCHelpers.Format:Guid(Osi.GetHostCharacter())
+            local target = normalize(Osi.GetHostCharacter())
             local handler = setmetatable({ Jumper = target }, { __index = JumpHandler })
-            local sourceCheck = ctx.stub(handler, "IsValidTeleportSource", function(_, character)
+            ctx.stub(handler, "IsValidTeleportSource", function(_, character)
                 ctx.expect(character).toBe(target)
                 return true
             end)
             local selected = {}
-            local candidates = ctx.stub(handler, "GetForceTeleportMembers", function(_, character)
+            ctx.stub(handler, "GetForceTeleportMembers", function(_, character)
                 ctx.expect(character).toBe(target)
                 return selected
             end)
             ctx.stub(PartyMemberSelector, "FilterPartyMembersFor", function()
                 error("Force teleport must bypass the automatic selector")
             end)
-            local getSettings = JumpHandler.GetTeleportSettings
-            local settings = ctx.stub(handler, "GetTeleportSettings", function(self, forceBypass)
-                ctx.expect(forceBypass).toBe(true)
-                return getSettings(self, forceBypass)
+            local getSetting = MCM.Get
+            ctx.stub(MCM, "Get", function(setting, ...)
+                if setting == "always_force_teleport" then return false end
+                return getSetting(setting, ...)
             end)
-            local dispatch = ctx.stub(VCHelpers.Teleporting, "TeleportCharactersToCharacter",
-                function(_, character, members, vfx, actualSettings)
+
+            local dispatch = ctx.stub(handler, "TeleportCharactersToCharacter",
+                function(_, character, characters, settings)
                     ctx.expect(character).toBe(target)
-                    ctx.expect(members).toBe(selected)
-                    ctx.expect(vfx).toBe(nil)
-                    ctx.expect(actualSettings).toEqual({ IgnoreDialogue = false, IgnoreRestricted = false })
+                    ctx.expect(characters).toBe(selected)
+                    ctx.expect(settings).toEqual({ IgnoreDialogue = false, IgnoreRestricted = false })
                 end)
-            if entryPoint == "TeleportCompanionsToCharacter" then
+
+            if method == "TeleportCompanionsToCharacter" then
                 handler:TeleportCompanionsToCharacter(target, true)
             else
                 handler:TeleportCompanionsToJumper(true)
             end
-            ctx.expect(sourceCheck).toHaveBeenCalledTimes(1)
-            ctx.expect(candidates).toHaveBeenCalledTimes(1)
-            ctx.expect(settings).toHaveBeenCalledTimes(1)
+
             ctx.expect(dispatch).toHaveBeenCalledTimes(1)
         end)
 
-        D.test(entryPoint .. " automatic dispatch keeps selector output", function(ctx)
-            ctx.requireServer()
-            local players = Osi.DB_Players:Get(nil)
-            if #players == 0 then ctx.skip("No players in the current save") end
-            local target = VCHelpers.Format:Guid(players[1][1])
-            local selected = {}
-            if players[2] then selected[1] = VCHelpers.Format:Guid(players[2][1]) end
-            local excludeCampResidents = entryPoint == "TeleportCompanionsToJumper" and true or nil
-            local selector = ctx.stub(PartyMemberSelector, "FilterPartyMembersFor", function(_, character, excludeCamp)
-                ctx.expect(character).toBe(target)
-                ctx.expect(excludeCamp).toBe(excludeCampResidents)
-                return selected
-            end)
-            local handler = setmetatable({ Jumper = target }, { __index = JumpHandler })
-            ctx.stub(handler, "IsValidTeleportSource", function() return true end)
-            ctx.stub(handler, "GetForceTeleportMembers", function()
-                error("Automatic teleport must use the selector")
-            end)
-            local bypass = MCM.Get("always_force_teleport")
-            local settings = {
-                IgnoreDialogue = not bypass and PartyMemberSelector.IgnoreOnDialogue or false,
-                IgnoreRestricted = not bypass and PartyMemberSelector.IgnoreRestrictedCharacters or false,
-            }
-            local dispatch = ctx.stub(VCHelpers.Teleporting, "TeleportCharactersToCharacter",
-                function(_, character, members, vfx, actualSettings)
+        D.test(method .. " automatic keeps selector output and dispatches through JumpHandler teleport",
+            function(ctx)
+                ctx.requireServer()
+                local target, members = loadParty()
+                if #members == 0 then ctx.skip("No players in the current save") end
+
+                local selected = { members[1] }
+                local excludeCampResidents = method == "TeleportCompanionsToJumper" and true or nil
+                local selector = ctx.stub(PartyMemberSelector, "FilterPartyMembersFor",
+                    function(_, character, excludeCamp)
+                        ctx.expect(character).toBe(target)
+                        ctx.expect(excludeCamp).toBe(excludeCampResidents)
+                        return selected
+                    end)
+                local handler = setmetatable({ Jumper = target }, { __index = JumpHandler })
+                ctx.stub(handler, "IsValidTeleportSource", function(_, character)
                     ctx.expect(character).toBe(target)
-                    ctx.expect(members).toBe(selected)
-                    ctx.expect(vfx).toBe(nil)
-                    ctx.expect(actualSettings).toEqual(settings)
+                    return true
                 end)
-            if entryPoint == "TeleportCompanionsToCharacter" then
-                handler:TeleportCompanionsToCharacter(target, false)
-            else
-                handler:TeleportCompanionsToJumper(false)
-            end
-            ctx.expect(selector).toHaveBeenCalledTimes(1)
-            ctx.expect(dispatch).toHaveBeenCalledTimes(1)
-        end)
+                ctx.stub(handler, "GetForceTeleportMembers", function()
+                    error("Automatic teleport must use the selector")
+                end)
+                local getSetting = MCM.Get
+                ctx.stub(MCM, "Get", function(setting, ...)
+                    if setting == "always_force_teleport" then return false end
+                    if setting == "ignore_on_dialogue" then return true end
+                    if setting == "ignore_restricted_characters" then return true end
+                    return getSetting(setting, ...)
+                end)
+
+                local dispatch = ctx.stub(handler, "TeleportCharactersToCharacter",
+                    function(_, character, characters, settings)
+                        ctx.expect(character).toBe(target)
+                        ctx.expect(characters).toBe(selected)
+                        ctx.expect(settings).toEqual({ IgnoreDialogue = true, IgnoreRestricted = true })
+                    end)
+
+                if method == "TeleportCompanionsToCharacter" then
+                    handler:TeleportCompanionsToCharacter(target, false)
+                else
+                    handler:TeleportCompanionsToJumper(false)
+                end
+
+                ctx.expect(selector).toHaveBeenCalledTimes(1)
+                ctx.expect(dispatch).toHaveBeenCalledTimes(1)
+            end)
     end
+
+    D.test("Distant party teleport keeps selector output and dispatches with settings", function(ctx)
+        ctx.requireServer()
+        local target, members = loadParty()
+        if #members == 0 then ctx.skip("No players in the current save") end
+
+        local selected = { members[1] }
+        local selector = ctx.stub(PartyMemberSelector, "FilterPartyMembersFor", function(_, character, excludeCamp)
+            ctx.expect(character).toBe(target)
+            ctx.expect(excludeCamp).toBe(true)
+            return selected
+        end)
+        local handler = setmetatable({ DistanceThresholdNoJump = 1 }, { __index = JumpHandler })
+        ctx.stub(handler, "IsValidTeleportSource", function(_, character)
+            ctx.expect(character).toBe(target)
+            return true
+        end)
+        ctx.stub(Osi, "GetPosition", function(character)
+            if character == target then return 0, 0, 0 end
+            return 10, 0, 0
+        end)
+        ctx.stub(VCHelpers.Grid, "GetDistance", function() return 10 end)
+        ctx.stub(VCHelpers.Loca, "GetDisplayName", function(_, character) return tostring(character) end)
+        local getSetting = MCM.Get
+        ctx.stub(MCM, "Get", function(setting, ...)
+            if setting == "always_force_teleport" then return false end
+            if setting == "ignore_on_dialogue" then return true end
+            if setting == "ignore_restricted_characters" then return true end
+            return getSetting(setting, ...)
+        end)
+
+        local dispatch = ctx.stub(handler, "TeleportCharactersToCharacter",
+            function(_, character, characters, settings)
+                ctx.expect(character).toBe(target)
+                ctx.expect(characters).toEqual(selected)
+                ctx.expect(settings).toEqual({ IgnoreDialogue = true, IgnoreRestricted = true })
+            end)
+
+        handler:TeleportDistantPartyMembers(target)
+
+        ctx.expect(selector).toHaveBeenCalledTimes(1)
+        ctx.expect(dispatch).toHaveBeenCalledTimes(1)
+    end)
+
+    D.test("TeleportCharactersToCharacter checks the target before reading a position", function(ctx)
+        ctx.requireServer()
+        local target, members = loadParty()
+        if #members == 0 then ctx.skip("No players in the current save") end
+
+        local settings = { IgnoreDialogue = false, IgnoreRestricted = false }
+        local check = ctx.stub(VCHelpers.Teleporting, "CanCharacterTeleport", function(_, character, actualSettings)
+            ctx.expect(character).toBe(target)
+            ctx.expect(actualSettings).toBe(settings)
+            return false, "blocked"
+        end)
+        local handler = setmetatable({}, { __index = JumpHandler })
+
+        handler:TeleportCharactersToCharacter(target, { members[1] }, settings)
+
+        ctx.expect(check).toHaveBeenCalledTimes(1)
+    end)
+
+    D.test("TeleportCharactersToCharacter checks every member with the given settings", function(ctx)
+        ctx.requireServer()
+        local target, members = loadParty()
+        if #members < 2 then ctx.skip("At least two party members are needed for this test") end
+
+        local settings = { IgnoreDialogue = false, IgnoreRestricted = false }
+        local checked = {}
+        ctx.stub(VCHelpers.Teleporting, "CanCharacterTeleport", function(_, character, actualSettings)
+            ctx.expect(actualSettings).toBe(settings)
+            table.insert(checked, character)
+            if character == target then return true end
+            return false, "member blocked"
+        end)
+        local handler = setmetatable({}, { __index = JumpHandler })
+
+        handler:TeleportCharactersToCharacter(target, { members[1], members[2] }, settings)
+
+        ctx.expect(checked).toEqual({ target, members[1], members[2] })
+    end)
+
+    D.test("TeleportCharactersToCharacter disables engine summon linking in teleport flags", function(ctx)
+        ctx.requireServer()
+        local target, members = loadParty()
+        if #members == 0 then ctx.skip("No players in the current save") end
+        local member = members[1]
+
+        local settings = { IgnoreDialogue = false, IgnoreRestricted = false }
+        ctx.stub(VCHelpers.Teleporting, "CanCharacterTeleport", function() return true end)
+        local position = ctx.stub(Osi, "GetPosition", function() return 1.5, 2.5, 3.5 end)
+        local teleports = {}
+        local teleport = ctx.stub(Osi, "TeleportToPosition",
+            function(character, x, y, z, event, linked, followers, summons, leaveCombat, snapToGround)
+                table.insert(teleports, {
+                    character = character,
+                    x = x,
+                    y = y,
+                    z = z,
+                    event = event,
+                    linked = linked,
+                    followers = followers,
+                    summons = summons,
+                    leaveCombat = leaveCombat,
+                    snapToGround = snapToGround,
+                })
+            end)
+        -- Abort before production runs when the Osi stubs did not take effect.
+        ctx.expect(Osi.GetPosition).toBe(position)
+        ctx.expect(Osi.TeleportToPosition).toBe(teleport)
+
+        local handler = setmetatable({}, { __index = JumpHandler })
+        handler:TeleportCharactersToCharacter(target, { member }, settings)
+
+        ctx.expect(position).toHaveBeenCalledTimes(1)
+        ctx.expect(teleport).toHaveBeenCalledTimes(1)
+        local call = teleports[1]
+        ctx.expect(call.character).toBe(member)
+        ctx.expect(call.x).toBe(1.5)
+        ctx.expect(call.y).toBe(2.5)
+        ctx.expect(call.z).toBe(3.5)
+        ctx.expect(call.event).toBe("FSTeleportToPosition_" .. member)
+        ctx.expect(call.linked).toBe(0)
+        ctx.expect(call.followers).toBe(0)
+        ctx.expect(call.summons).toBe(0)
+        ctx.expect(call.leaveCombat).toBe(0)
+        ctx.expect(call.snapToGround).toBe(1)
+    end)
 
     for _, setting in ipairs({ "mod_enabled", "teleporting_method_enabled" }) do
         local disabledSetting = setting
