@@ -356,7 +356,7 @@ function JumpHandler:HandleJumpTimerFinished()
         return
     end
 
-    -- Camp, combat, and control changes stop polling even when the terrain is unsafe.
+    -- Ensure the jumper is still valid and passes core handling checks (position etc)
     if not self:PassesCoreHandlingChecks(self.Jumper) then
         self:CancelJumpCheck()
         return
