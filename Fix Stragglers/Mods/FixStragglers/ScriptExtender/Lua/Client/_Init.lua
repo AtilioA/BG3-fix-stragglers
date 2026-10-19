@@ -1,11 +1,6 @@
 ---@param skipChecks boolean|nil
 ---@return nil
 local function FS_SendTeleportPartyToYou(skipChecks)
-    if not Ext or not Ext.Net or not Ext.Json then
-        FSWarn(0, "Ext, Ext.Net or Ext.Json are not available.")
-        return
-    end
-
     skipChecks = skipChecks or MCM.Get("always_force_teleport")
 
     Ext.Net.PostMessageToServer("FS_TeleportPartyToYou", Ext.Json.Stringify({ skipChecks = skipChecks }))
